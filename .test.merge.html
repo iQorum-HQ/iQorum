@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iQorum - Intelligent Political Discourse</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --dark: #1a2530;
+            --light: #f8f9fa;
+            --text: #2c3e50;
+            --text-light: #7f8c8d;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--dark), #2c3e50, #34495e);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 90vh;
+        }
+        
+        header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .logo {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            letter-spacing: 1px;
+            text-transform: lowercase;
+            font-family: 'Trebuchet MS', sans-serif;
+        }
+        
+        .logo-icon {
+            font-size: 32px;
+            transform: rotate(5deg);
+        }
+        
+        .tagline {
+            font-size: 16px;
+            opacity: 0.9;
+            font-style: italic;
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+        
+        .tabs {
+            display: flex;
+            background: var(--light);
+            border-bottom: 1px solid #e0e0e0;
+            overflow-x: auto;
+            scrollbar-width: none;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+        
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab {
+            flex: 1;
+            min-width: 90px;
+            padding: 15px 12px;
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .tab i {
+            margin-right: 5px;
+        }
+        
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .section {
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+            height: 100%;
+        }
+        
+        .section.active {
+            display: flex;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .welcome {
+            text-align: center;
+        }
+        
+        .welcome h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .welcome p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .app-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .app-card:active {
+            transform: scale(0.98);
+        }
+        
+        .app-card h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .app-card p {
+            color: var(--text-light);
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: var(--light);
+            color: var(--text);
+        }
+        
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .question {
+            margin-bottom: 25px;
+        }
+        
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            padding: 15px;
+            background: #f5f7fb;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        
+        .option:hover {
+            background: #e8eef9;
+        }
+        
+        .option.selected {
+            border-color: var(--primary);
+            background: #e3eaf6;
+        }
+        
+        .timer {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+        
+        .result {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .result h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .score {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--secondary);
+            margin: 20px 0;
+        }
+        
+        .political-compass {
+            width: 300px;
+            height: 300px;
+            margin: 20px auto;
+            background: #f0f4f9;
+            border-radius: 10px;
+            position: relative;
+            border: 1px solid #ccc;
+        }
+        
+        .compass-point {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .discovery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .discovery-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .discovery-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .discovery-item i {
+            font-size: 24px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .forum-container {
+            margin-top: 20px;
+        }
+        
+        .forum-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        
+        .forum-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .forum-tab {
+            padding: 10px 20px;
+            background: var(--light);
+            border-radius: 50px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+        
+        .forum-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .forum-content {
+            display: none;
+        }
+        
+        .forum-content.active {
+            display: block;
+        }
+        
+        .thread {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease;
+        }
+        
+        .thread:hover {
+            transform: translateY(-3px);
+        }
+        
+        .thread-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        .thread-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .thread-preview {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        
+        .thread-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .locked-room {
+            position: relative;
+        }
+        
+        .locked-room::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .locked-room::before {
+            content: '\f023';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            font-size: 24px;
+            color: var(--accent);
+        }
+        
+        .feedback-form {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .faq-item {
+            margin-bottom: 20px;
+        }
+        
+        .faq-question {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-answer {
+            color: var(--text-light);
+            line-height: 1.6;
+            padding: 10px;
+            background: var(--light);
+            border-radius: 8px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-light);
+            font-size: 14px;
+            border-top: 1px solid #eee;
+            flex-shrink: 0;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .subscription-info {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .subscription-info h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .benefits-list {
+            list-style-type: none;
+            margin-bottom: 20px;
+        }
+        
+        .benefits-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .benefits-list li i {
+            color: var(--success);
+        }
+        
+        /* Profile Section Styles */
+        .profile-container {
+            padding: 20px;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        
+        .profile-info h2 {
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .profile-info p {
+            color: var(--text-light);
+        }
+        
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+        
+        .profile-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .profile-section h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .test-history {
+            list-style-type: none;
+        }
+        
+        .test-history li {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .test-history li:last-child {
+            border-bottom: none;
+        }
+        
+        .test-info {
+            flex: 1;
+        }
+        
+        .test-name {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .test-date {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        .test-result {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .privacy-note {
+            background: #f8f9fa;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .privacy-note i {
+            color: var(--primary);
+            margin-right: 10px;
+        }
+        
+        .login-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                border-radius: 15px;
+            }
+            
+            .tab {
+                font-size: 14px;
+                padding: 12px 8px;
+            }
+            
+            .tab i {
+                margin-right: 3px;
+            }
+            
+            .logo {
+                font-size: 28px;
+            }
+            
+            .logo-icon {
+                font-size: 28px;
+            }
+            
+            .profile-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .login-btn {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-top: 10px;
+            }
+        }
+
+        /* Tablet and Desktop Styles */
+        @media (min-width: 768px) {
+            .container {
+                height: 85vh;
+                max-height: 800px;
+            }
+            
+            .tabs {
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+            
+            .tab {
+                min-width: 120px;
+            }
+            
+            .content {
+                overflow-y: auto;
+            }
+            
+            .welcome {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+                text-align: left;
+            }
+            
+            .welcome > h2, .welcome > p {
+                grid-column: 1 / -1;
+                text-align: center;
+            }
+            
+            .discovery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+            
+            .forum-container {
+                flex-direction: row;
+            }
+            
+            .forum-tabs {
+                flex-direction: column;
+                width: 200px;
+                margin-right: 20px;
+                margin-bottom: 0;
+            }
+            
+            .forum-content {
+                flex-grow: 1;
+            }
+            
+            .profile-header {
+                flex-direction: row;
+                text-align: left;
+            }
+            
+            .profile-stats {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .container {
+                height: 92vh;
+            }
+            
+            body {
+                padding: 15px;
+            }
+            
+            .tabs {
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+        }
+
+        /* Large Desktop Styles */
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 95%;
+                margin: 2.5vh auto;
+                height: 95vh;
+            }
+            
+            .content {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .section {
+                flex: 1;
+            }
+            
+            .welcome {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+            
+            .app-card {
+                margin: 10px;
+            }
+        }
+        
+        /* Landscape Mobile Optimization */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .container {
+                height: 94vh;
+                max-height: none;
+            }
+            
+            header {
+                padding: 15px 20px;
+            }
+            
+            .logo {
+                font-size: 28px;
+                margin-bottom: 0;
+            }
+            
+            .tagline {
+                font-size: 14px;
+            }
+            
+            .tabs {
+                padding: 8px 0;
+            }
+            
+            .tab {
+                padding: 10px 8px;
+                font-size: 14px;
+            }
+            
+            .section {
+                padding: 15px;
+            }
+        }
+
+        /* Fix for tab visibility in desktop and landscape */
+        @media (min-width: 768px), (max-height: 600px) and (orientation: landscape) {
+            .content {
+                overflow: visible;
+            }
+            
+            .tabs {
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                background: var(--light);
+            }
+            
+            .section.active {
+                overflow-y: auto;
+                max-height: calc(100vh - 150px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-brain logo-icon"></i>
+                <span>iQorum</span>
+            </div>
+            <div class="tagline">Reason. Discourse. Decision.</div>
+            <button class="login-btn">Sign In</button>
+        </header>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="home"><i class="fas fa-home"></i> Home</div>
+            <div class="tab" data-tab="politics"><i class="fas fa-landmark"></i> Politics</div>
+            <div class="tab" data-tab="iq"><i class="fas fa-brain"></i> IQ Test</div>
+            <div class="tab" data-tab="discovery"><i class="fas fa-compass"></i> Discovery</div>
+            <div class="tab" data-tab="forum"><i class="fas fa-comments"></i> Forum</div>
+            <div class="tab" data-tab="profile"><i class="fas fa-user"></i> Profile</div>
+            <div class="tab" data-tab="faq"><i class="fas fa-question-circle"></i> FAQ</div>
+        </div>
+        
+        <div class="content">
+            <div class="section active" id="home">
+                <div class="welcome">
+                    <h2>Welcome to iQorum</h2>
+                    <p>Discover your political leanings and estimate your cognitive abilities with our scientifically-designed assessments.</p>
+                    
+                    <div class="app-card" data-app="politics">
+                        <h3>Political Compass Test</h3>
+                        <p>10 questions to determine your political orientation</p>
+                        <button class="btn">Start Test</button>
+                    </div>
+                    
+                    <div class="app-card" data-app="iq">
+                        <h3>IQ Assessment</h3>
+                        <p>Timed 10-question test to estimate your IQ</p>
+                        <button class="btn">Start Test</button>
+                    </div>
+                    
+                    <div class="subscription-info">
+                        <h3>Premium Membership</h3>
+                        <ul class="benefits-list">
+                            <li><i class="fas fa-check-circle"></i> Access to exclusive subscriber forums</li>
+                            <li><i class="fas fa-check-circle"></i> Detailed analytics of your test results</li>
+                            <li><i class="fas fa-check-circle"></i> Personalized recommendations</li>
+                            <li><i class="fas fa-check-circle"></i> Ad-free experience</li>
+                        </ul>
+                        <button class="btn btn-accent">Subscribe Now</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section" id="politics">
+                <div class="progress-bar">
+                    <div class="progress" id="politics-progress"></div>
+                </div>
+                
+                <!-- Political Questions -->
+                <div class="question active" id="politics-question-1">
+                    <div class="question-text">1. What should be the government's primary role in the economy?</div>
+                    <div class="options">
+                        <div class="option" data-value="lib">Minimal intervention, free markets work best</div>
+                        <div class="option" data-value="auth">Strong regulation to protect workers and consumers</div>
+                        <div class="option" data-value="left">Redistribution of wealth and public ownership</div>
+                        <div class="option" data-value="right">Creating favorable conditions for business growth</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="politics-question-2">
+                    <div class="question-text">2. How should society address income inequality?</div>
+                    <div class="options">
+                        <div class="option" data-value="left">Progressive taxation and wealth redistribution</div>
+                        <div class="option" data-value="right">Encourage entrepreneurship and economic growth</div>
+                        <div class="option" data-value="lib">Reduce government and let charity address needs</div>
+                        <div class="option" data-value="auth">Government should mandate living wages and price controls</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="politics-question-3">
+                    <div class="question-text">3. What is your view on national defense spending?</div>
+                    <div class="options">
+                        <div class="option" data-value="left">Significantly reduce military spending</div>
+                        <div class="option" data-value="lib">Maintain current levels with more oversight</div>
+                        <div class="option" data-value="right">Increase spending to ensure national security</div>
+                        <div class="option" data-value="auth">Spend whatever is necessary for absolute security</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="politics-question-4">
+                    <div class="question-text">4. How should healthcare be provided?</div>
+                    <div class="options">
+                        <div class="option" data-value="left">Universal healthcare funded by taxes</div>
+                        <div class="option" data-value="auth">Government-regulated private system with mandates</div>
+                        <div class="option" data-value="right">Private healthcare with minimal government involvement</div>
+                        <div class="option" data-value="lib">Free market solutions with charity for those in need</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="politics-question-5">
+                    <div class="question-text">5. What is your stance on immigration?</div>
+                    <div class="options">
+                        <div class="option" data-value="left">Open borders with path to citizenship for all</div>
+                        <div class="option" data-value="lib">Moderate immigration with simplified processes</div>
+                        <div class="option" data-value="right">Strict vetting with emphasis on economic contribution</div>
+                        <div class="option" data-value="auth">Strong borders with limited immigration</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="politics-question-6">
+                    <div class="question-text">6. How should education be managed?</div>
+                    <div class="options">
+                        <div class="option" data-value="left">Fully public education with equal funding for all</div>
+                        <div class="option" data-value="auth">National standards with government oversight</div>
+                        <div class="option" data-value="right">School choice with private options</div>
+                        <div class="option" data-value="lib">Complete privatization of education</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="politics-question-7">
+                    <div class="question-text">7. What is your view on environmental regulation?</div>
+                    <div class="options">
+                        <div class="option" data-value="left">Strong regulations to protect the environment at any cost</div>
+                        <div class="option" data-value="auth">Government should set and enforce strict standards</div>
+                        <div class="option" data-value="right">Balance between environment and economic growth</div>
+                        <div class="option" data-value="lib">Market-based solutions without heavy regulation</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="politics-question-8">
+                    <div class="question-text">8. How should social issues like marriage be handled?</div>
+                    <div class="options">
+                        <div class="option" data-value="left">Government should ensure equal rights for all</div>
+                        <div class="option" data-value="lib">Government should not be involved in personal relationships</div>
+                        <div class="option" data-value="right">Traditional values should be promoted</div>
+                        <div class="option" data-value="auth">Government should enforce moral standards</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="politics-question-9">
+                    <div class="question-text">9. What is your view on gun control?</div>
+                    <div class="options">
+                        <div class="option" data-value="left">Strict gun control measures</div>
+                        <div class="option" data-value="auth">Licensing and registration requirements</div>
+                        <div class="option" data-value="right">Protect Second Amendment rights</div>
+                        <div class="option" data-value="lib">Minimal restrictions on gun ownership</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="politics-question-10">
+                    <div class="question-text">10. How should government address crime?</div>
+                    <div class="options">
+                        <div class="option" data-value="left">Address root causes through social programs</div>
+                        <div class="option" data-value="auth">Strong law enforcement and longer sentences</div>
+                        <div class="option" data-value="right">Support police and punish offenders</div>
+                        <div class="option" data-value="lib">Focus on individual rights and limited policing</div>
+                    </div>
+                </div>
+                
+                <div id="politics-result" class="result">
+                    <h3>Your Political Compass</h3>
+                    <p>Based on your answers, your political orientation is:</p>
+                    <div class="score" id="politics-score">Centrist</div>
+                    <div class="political-compass">
+                        <div class="compass-point" id="user-point"></div>
+                    </div>
+                    <p id="politics-description">You show balanced views on both economic and social dimensions.</p>
+                    <button class="btn" id="politics-restart">Take Again</button>
+                </div>
+            </div>
+            
+            <div class="section" id="iq">
+                <div class="timer" id="iq-timer">10:00</div>
+                <div class="progress-bar">
+                    <div class="progress" id="iq-progress"></div>
+                </div>
+                
+                <!-- IQ Questions -->
+                <div class="question active" id="iq-question-1">
+                    <div class="question-text">1. Which number comes next in the sequence: 2, 4, 8, 16, ?</div>
+                    <div class="options">
+                        <div class="option" data-value="incorrect">24</div>
+                        <div class="option" data-value="correct">32</div>
+                        <div class="option" data-value="incorrect">30</div>
+                        <div class="option" data-value="incorrect">18</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="iq-question-2">
+                    <div class="question-text">2. If all Bloops are Razzies and all Razzies are Lazzies, then all Bloops are definitely Lazzies?</div>
+                    <div class="options">
+                        <div class="option" data-value="correct">True</div>
+                        <div class="option" data-value="incorrect">False</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="iq-question-3">
+                    <div class="question-text">3. Which word does not belong: Apple, Banana, Carrot, Orange</div>
+                    <div class="options">
+                        <div class="option" data-value="incorrect">Apple</div>
+                        <div class="option" data-value="incorrect">Banana</div>
+                        <div class="option" data-value="correct">Carrot</div>
+                        <div class="option" data-value="incorrect">Orange</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="iq-question-4">
+                    <div class="question-text">4. If you rearrange the letters "CIFAIPC" you would have the name of a(n):</div>
+                    <div class="options">
+                        <div class="option" data-value="incorrect">City</div>
+                        <div class="option" data-value="incorrect">Animal</div>
+                        <div class="option" data-value="incorrect">Ocean</div>
+                        <div class="option" data-value="correct">Country</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="iq-question-5">
+                    <div class="question-text">5. Which one of the five is least like the other four?</div>
+                    <div class="options">
+                        <div class="option" data-value="incorrect">Dog</div>
+                        <div class="option" data-value="incorrect">Mouse</div>
+                        <div class="option" data-value="incorrect">Lion</div>
+                        <div class="option" data-value="correct">Snake</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="iq-question-6">
+                    <div class="question-text">6. If some Wocks are Sliobs, and some Sliobs are Enacs, then some Wocks are definitely Enacs.</div>
+                    <div class="options">
+                        <div class="option" data-value="incorrect">True</div>
+                        <div class="option" data-value="correct">False</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="iq-question-7">
+                    <div class="question-text">7. Which number should come next in the pattern: 37, 34, 31, 28, ?</div>
+                    <div class="options">
+                        <div class="option" data-value="incorrect">26</div>
+                        <div class="option" data-value="correct">25</div>
+                        <div class="option" data-value="incorrect">23</div>
+                        <div class="option" data-value="incorrect">21</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="iq-question-8">
+                    <div class="question-text">8. Choose the word most similar to "Trust":</div>
+                    <div class="options">
+                        <div class="option" data-value="incorrect">Doubt</div>
+                        <div class="option" data-value="incorrect">Suspect</div>
+                        <div class="option" data-value="correct">Confidence</div>
+                        <div class="option" data-value="incorrect">Question</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="iq-question-9">
+                    <div class="question-text">9. If all Zips are Zaps and some Zaps are Zops, then some Zips are definitely Zops.</div>
+                    <div class="options">
+                        <div class="option" data-value="incorrect">True</div>
+                        <div class="option" data-value="correct">False</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="iq-question-10">
+                    <div class="question-text">10. What is the missing number in the sequence: 4, 9, 16, 25, ?</div>
+                    <div class="options">
+                        <div class="option" data-value="incorrect">34</div>
+                        <div class="option" data-value="incorrect">38</div>
+                        <div class="option" data-value="correct">36</div>
+                        <div class="option" data-value="incorrect">41</div>
+                    </div>
+                </div>
+                
+                <div id="iq-result" class="result">
+                    <h3>Your IQ Estimate</h3>
+                    <p>Based on your performance, your estimated IQ is:</p>
+                    <div class="score" id="iq-score">120</div>
+                    <p id="iq-description">This places you in the above average range compared to the general population.</p>
+                    <button class="btn" id="iq-restart">Take Again</button>
+                </div>
+            </div>
+            
+            <div class="section" id="discovery">
+                <div class="welcome">
+                    <h2>Discovery</h2>
+                    <p>Explore insights about psychology, politics, and cognitive science.</p>
+                </div>
+                
+                <div class="discovery-grid">
+                    <div class="discovery-item">
+                        <i class="fas fa-chart-line"></i>
+                        <h4>Political Spectrum</h4>
+                        <p>Understanding left vs. right</p>
+                    </div>
+                    <div class="discovery-item">
+                        <i class="fas fa-brain"></i>
+                        <h4>IQ Basics</h4>
+                        <p>What IQ tests measure</p>
+                    </div>
+                    <div class="discovery-item">
+                        <i class="fas fa-balance-scale"></i>
+                        <h4>Cognitive Biases</h4>
+                        <p>How we think</p>
+                    </div>
+                    <div class="discovery-item">
+                        <i class="fas fa-globe"></i>
+                        <h4>Worldview</h4>
+                        <p>Shaping perspectives</p>
+                    </div>
+                    <div class="discovery-item">
+                        <i class="fas fa-book"></i>
+                        <h4>Resources</h4>
+                        <p>Further reading</p>
+                    </div>
+                    <div class="discovery-item">
+                        <i class="fas fa-user-friends"></i>
+                        <h4>About Us</h4>
+                        <p>Our methodology</p>
+                    </div>
+                </div>
+                
+                <div class="app-card">
+                    <h3>Coming Soon</h3>
+                    <p>User profiles, detailed analytics, and personalized recommendations</p>
+                    <button class="btn">Notify Me</button>
+                </div>
+            </div>
+            
+            <div class="section" id="forum">
+                <div class="welcome">
+                    <h2>Community Forum</h2>
+                    <p>Join the conversation and connect with other users.</p>
+                </div>
+                
+                <div class="forum-tabs">
+                    <div class="forum-tab active" data-forum="general">Active Discussion</div>
+                    <div class="forum-tab" data-forum="pma">PMA (Positive Mental Attitude)</div>
+                    <div class="forum-tab" data-forum="premium">Premium Lounge</div>
+                </div>
+                
+                <div class="forum-content active" id="general-forum">
+                    <div class="thread">
+                        <div class="thread-header">
+                            <span class="thread-author">JohnDoe</span>
+                            <span class="thread-date">Today, 10:24 AM</span>
+                        </div>
+                        <div class="thread-title">What do you think about the latest political developments?</div>
+                        <div class="thread-preview">I've been following the recent policy changes and wanted to get others' perspectives...</div>
+                        <div class="thread-meta">
+                            <span><i class="fas fa-comment"></i> 24 replies</span>
+                            <span><i class="fas fa-eye"></i> 143 views</span>
+                        </div>
+                    </div>
+                    
+                    <div class="thread">
+                        <div class="thread-header">
+                            <span class="thread-author">PoliticalScientist</span>
+                            <span class="thread-date">Yesterday, 4:56 PM</span>
+                        </div>
+                        <div class="thread-title">How accurate are these political tests really?</div>
+                        <div class="thread-preview">I've taken several political compass tests and sometimes get different results...</div>
+                        <div class="thread-meta">
+                            <span><i class="fas fa-comment"></i> 18 replies</span>
+                            <span><i class="fas fa-eye"></i> 98 views</span>
+                        </div>
+                    </div>
+                    
+                    <div class="thread">
+                        <div class="thread-header">
+                            <span class="thread-author">CuriousMind</span>
+                            <span class="thread-date">Yesterday, 11:30 AM</span>
+                        </div>
+                        <div class="thread-title">Recommendations for learning more about political theory?</div>
+                        <div class="thread-preview">I've become really interested in political ideologies lately and would like to...</div>
+                        <div class="thread-meta">
+                            <span><i class="fas fa-comment"></i> 32 replies</span>
+                            <span><i class="fas fa-eye"></i> 210 views</span>
+                        </div>
+                    </div>
+                    
+                    <button class="btn">Start New Thread</button>
+                </div>
+                
+                <div class="forum-content" id="pma-forum">
+                    <div class="thread">
+                        <div class="thread-header">
+                            <span class="thread-author">PositivePaul</span>
+                            <span class="thread-date">Today, 9:15 AM</span>
+                        </div>
+                        <div class="thread-title">Morning affirmations for a great day!</div>
+                        <div class="thread-preview">I start every day with these positive affirmations and they've really changed my outlook...</div>
+                        <div class="thread-meta">
+                            <span><i class="fas fa-comment"></i> 15 replies</span>
+                            <span><i class="fas fa-eye"></i> 87 views</span>
+                        </div>
+                    </div>
+                    
+                    <div class="thread">
+                        <div class="thread-header">
+                            <span class="thread-author">MindfulMary</span>
+                            <span class="thread-date">Yesterday, 7:30 PM</span>
+                        </div>
+                        <div class="thread-title">Gratitude journaling practice</div>
+                        <div class="thread-preview">I've been keeping a gratitude journal for 3 months now and wanted to share how it's...</div>
+                        <div class="thread-meta">
+                            <span><i class="fas fa-comment"></i> 22 replies</span>
+                            <span><i class="fas fa-eye"></i> 124 views</span>
+                        </div>
+                    </div>
+                    
+                    <button class="btn">Start New Thread</button>
+                </div>
+                
+                <div class="forum-content" id="premium-forum">
+                    <div class="thread locked-room">
+                        <div class="thread-header">
+                            <span class="thread-author">Admin</span>
+                            <span class="thread-date">Ongoing</span>
+                        </div>
+                        <div class="thread-title">Exclusive content for premium members</div>
+                        <div class="thread-preview">This forum is reserved for our premium subscribers. Upgrade your account to access exclusive discussions, in-depth analysis, and special content.</div>
+                        <div class="thread-meta">
+                            <span><i class="fas fa-comment"></i> 56 replies</span>
+                            <span><i class="fas fa-eye"></i> Subscribers only</span>
+                        </div>
+                    </div>
+                    
+                    <div class="subscription-info">
+                        <h3>Unlock Premium Forums</h3>
+                        <p>Upgrade your account to access exclusive subscriber-only content and discussions.</p>
+                        <button class="btn btn-accent">Subscribe Now</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section" id="profile">
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <div class="profile-avatar">JD</div>
+                        <div class="profile-info">
+                            <h2>JohnDoe</h2>
+                            <p>Member since January 2023</p>
+                        </div>
+                    </div>
+                    
+                    <div class="privacy-note">
+                        <i class="fas fa-shield-alt"></i>
+                        Your privacy is protected. Only your username and test results are visible to others.
+                    </div>
+                    
+                    <div class="profile-stats">
+                        <div class="stat-card">
+                            <div class="stat-value">Centrist</div>
+                            <div class="stat-label">Political POS</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">124</div>
+                            <div class="stat-label">IQ Level</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Tests Taken</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">28</div>
+                            <div class="stat-label">Forum Posts</div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-section">
+                        <h3>Test History</h3>
+                        <ul class="test-history">
+                            <li>
+                                <div class="test-info">
+                                    <div class="test-name">Political Compass Test</div>
+                                    <div class="test-date">Completed on: October 15, 2023</div>
+                                </div>
+                                <div class="test-result">Centrist</div>
+                            </li>
+                            <li>
+                                <div class="test-info">
+                                    <div class="test-name">IQ Assessment</div>
+                                    <div class="test-date">Completed on: October 10, 2023</div>
+                                </div>
+                                <div class="test-result">124</div>
+                            </li>
+                            <li>
+                                <div class="test-info">
+                                    <div class="test-name">Political Compass Test</div>
+                                    <div class="test-date">Completed on: September 28, 2023</div>
+                                </div>
+                                <div class="test-result">Center-Left</div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="profile-section">
+                        <h3>Recent Forum Activity</h3>
+                        <ul class="test-history">
+                            <li>
+                                <div class="test-info">
+                                    <div class="test-name">How accurate are these political tests really?</div>
+                                    <div class="test-date">Posted in: Active Discussion</div>
+                                </div>
+                                <div class="test-result">18 replies</div>
+                            </li>
+                            <li>
+                                <div class="test-info">
+                                    <div class="test-name">Morning affirmations for a great day!</div>
+                                    <div class="test-date">Posted in: PMA</div>
+                                </div>
+                                <div class="test-result">5 replies</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section" id="faq">
+                <div class="welcome">
+                    <h2>Frequently Asked Questions</h2>
+                    <p>Find answers to common questions about our platform and tests.</p>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">How accurate are the political test results? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-answer">Our political test is based on established political science frameworks and has been validated through extensive research. However, it's important to remember that these tests provide an estimate of your political leanings rather than a definitive categorization.</div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Is the IQ test a real IQ assessment? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-answer">Our IQ test is designed to provide an estimate of your cognitive abilities based on pattern recognition, logical reasoning, and problem-solving skills. While it correlates with standard IQ measures, it is not a substitute for a professionally administered IQ test.</div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">How can I access premium features? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-answer">Premium features can be accessed by subscribing to our monthly or annual plan. This includes detailed analytics, personalized recommendations, and access to exclusive subscriber forums.</div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">How do I reset my password? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-answer">You can reset your password by going to the login page and clicking on "Forgot Password". You'll receive an email with instructions to reset your password.</div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">What information is visible on my public profile? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-answer">For privacy reasons, only your username, political orientation, and IQ level are visible to other users. Your email address and other personal information are never displayed publicly.</div>
+                </div>
+                
+                <div class="feedback-form">
+                    <h3>Submit Feedback</h3>
+                    <p>We value your input! Let us know how we can improve.</p>
+                    
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" placeholder="Your name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="Your email address">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category">
+                            <option value="">Select a category</option>
+                            <option value="test">Test Accuracy</option>
+                            <option value="ui">User Interface</option>
+                            <option value="feature">Feature Request</option>
+                            <option value="bug">Bug Report</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Your Feedback</label>
+                        <textarea id="message" placeholder="Please provide your feedback here..."></textarea>
+                    </div>
+                    
+                    <button class="btn">Submit Feedback</button>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>iQorum &copy; 2023 | Privacy Policy | Terms of Service</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab navigation
+            const tabs = document.querySelectorAll('.tab');
+            const sections = document.querySelectorAll('.section');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.getAttribute('data-tab');
+                    
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Show corresponding section
+                    sections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === tabName) {
+                            section.classList.add('active');
+                        }
+                    });
+                });
+            });
+            
+            // App card navigation
+            const appCards = document.querySelectorAll('.app-card');
+            appCards.forEach(card => {
+                card.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('btn') || card.getAttribute('data-app')) {
+                        const app = card.getAttribute('data-app');
+                        
+                        // Update active tab
+                        tabs.forEach(t => t.classList.remove('active'));
+                        document.querySelector(`.tab[data-tab="${app}"]`).classList.add('active');
+                        
+                        // Show corresponding section
+                        sections.forEach(section => {
+                            section.classList.remove('active');
+                            if (section.id === app) {
+                                section.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            });
+            
+            // Forum tab navigation
+            const forumTabs = document.querySelectorAll('.forum-tab');
+            const forumContents = document.querySelectorAll('.forum-content');
+            
+            forumTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const forumId = tab.getAttribute('data-forum');
+                    
+                    // Update active forum tab
+                    forumTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Show corresponding forum content
+                    forumContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${forumId}-forum`) {
+                            content.classList.add('active');
+                        }
+                    });
+                });
+            });
+            
+            // FAQ accordion functionality
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', () => {
+                    const answer = question.nextElementSibling;
+                    const isVisible = answer.style.display === 'block';
+                    
+                    // Close all answers
+                    document.querySelectorAll('.faq-answer').forEach(ans => {
+                        ans.style.display = 'none';
+                    });
+                    
+                    // Reset all icons
+                    document.querySelectorAll('.faq-question i').forEach(icon => {
+                        icon.className = 'fas fa-chevron-down';
+                    });
+                    
+                    // Open this answer if it was closed
+                    if (!isVisible) {
+                        answer.style.display = 'block';
+                        question.querySelector('i').className = 'fas fa-chevron-up';
+                    }
+                });
+            });
+            
+            // Politics test logic
+            const politicsQuestions = document.querySelectorAll('#politics .question');
+            const politicsOptions = document.querySelectorAll('#politics .option');
+            let politicsAnswers = [];
+            let currentPoliticsQuestion = 1;
+            
+            // Hide all politics questions except the first one
+            politicsQuestions.forEach((question, index) => {
+                if (index !== 0) {
+                    question.classList.remove('active');
+                }
+            });
+            
+            politicsOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    // Mark selected option
+                    option.parentElement.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    option.classList.add('selected');
+                    
+                    // Store answer
+                    const questionId = option.closest('.question').id;
+                    politicsAnswers[questionId] = option.getAttribute('data-value');
+                    
+                    // Update progress
+                    const progressPercentage = (currentPoliticsQuestion / 10) * 100;
+                    document.getElementById('politics-progress').style.width = `${progressPercentage}%`;
+                    
+                    // Move to next question after delay
+                    setTimeout(() => {
+                        document.getElementById(`politics-question-${currentPoliticsQuestion}`).classList.remove('active');
+                        
+                        if (currentPoliticsQuestion < 10) {
+                            currentPoliticsQuestion++;
+                            document.getElementById(`politics-question-${currentPoliticsQuestion}`).classList.add('active');
+                        } else {
+                            // Show result after last question
+                            document.getElementById('politics-result').classList.add('active');
+                            
+                            // Calculate and display result
+                            const result = calculatePoliticalResult(politicsAnswers);
+                            document.getElementById('politics-score').textContent = result.label;
+                            document.getElementById('politics-description').textContent = result.description;
+                            
+                            // Position point on compass
+                            document.getElementById('user-point').style.top = `${result.y}%`;
+                            document.getElementById('user-point').style.left = `${result.x}%`;
+                        }
+                    }, 800);
+                });
+            });
+            
+            // Calculate political result based on answers
+            function calculatePoliticalResult(answers) {
+                // Simplified calculation for demo purposes
+                // In a real app, this would be more sophisticated
+                let leftRightScore = 0;
+                let authLibScore = 0;
+                
+                for (const question in answers) {
+                    const answer = answers[question];
+                    
+                    if (answer === 'left') leftRightScore -= 1;
+                    if (answer === 'right') leftRightScore += 1;
+                    if (answer === 'auth') authLibScore += 1;
+                    if (answer === 'lib') authLibScore -= 1;
+                }
+                
+                // Normalize scores to percentages
+                const x = 50 + (leftRightScore * 10);
+                const y = 50 + (authLibScore * 10);
+                
+                // Determine label based on position
+                let label = '';
+                let description = '';
+                
+                if (x < 40 && y < 40) {
+                    label = 'Libertarian Left';
+                    description = 'You favor personal freedom and economic equality.';
+                } else if (x < 40 && y > 60) {
+                    label = 'Authoritarian Left';
+                    description = 'You favor economic equality and strong social structure.';
+                } else if (x > 60 && y < 40) {
+                    label = 'Libertarian Right';
+                    description = 'You favor free markets and personal freedom.';
+                } else if (x > 60 && y > 60) {
+                    label = 'Authoritarian Right';
+                    description = 'You favor strong authority and free markets.';
+                } else if (x < 40) {
+                    label = 'Left-Leaning';
+                    description = 'You generally favor economic equality.';
+                } else if (x > 60) {
+                    label = 'Right-Leaning';
+                    description = 'You generally favor free markets.';
+                } else if (y < 40) {
+                    label = 'Libertarian';
+                    description = 'You generally favor personal freedom.';
+                } else if (y > 60) {
+                    label = 'Authoritarian';
+                    description = 'You generally favor strong social structure.';
+                } else {
+                    label = 'Centrist';
+                    description = 'You show balanced views on both economic and social dimensions.';
+                }
+                
+                return { x, y, label, description };
+            }
+            
+            // IQ test logic
+            const iqQuestions = document.querySelectorAll('#iq .question');
+            const iqOptions = document.querySelectorAll('#iq .option');
+            let iqAnswers = [];
+            let currentIqQuestion = 1;
+            let timeLeft = 600; // 10 minutes in seconds
+            let iqTimer;
+            
+            // Hide all IQ questions except the first one
+            iqQuestions.forEach((question, index) => {
+                if (index !== 0) {
+                    question.classList.remove('active');
+                }
+            });
+            
+            // Start timer when IQ test is opened
+            document.querySelector('.tab[data-tab="iq"]').addEventListener('click', startIqTimer);
+            
+            function startIqTimer() {
+                clearInterval(iqTimer);
+                timeLeft = 600;
+                updateIqTimer();
+                
+                iqTimer = setInterval(() => {
+                    timeLeft--;
+                    updateIqTimer();
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(iqTimer);
+                        showIqResult();
+                    }
+                }, 1000);
+            }
+            
+            function updateIqTimer() {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById('iq-timer').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            iqOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    // Mark selected option
+                    option.parentElement.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    option.classList.add('selected');
+                    
+                    // Store answer
+                    const questionId = option.closest('.question').id;
+                    iqAnswers[questionId] = option.getAttribute('data-value');
+                    
+                    // Update progress
+                    const progressPercentage = (currentIqQuestion / 10) * 100;
+                    document.getElementById('iq-progress').style.width = `${progressPercentage}%`;
+                    
+                    // Move to next question after delay
+                    setTimeout(() => {
+                        document.getElementById(`iq-question-${currentIqQuestion}`).classList.remove('active');
+                        
+                        if (currentIqQuestion < 10) {
+                            currentIqQuestion++;
+                            document.getElementById(`iq-question-${currentIqQuestion}`).classList.add('active');
+                        } else {
+                            // Show result after last question
+                            showIqResult();
+                        }
+                    }, 800);
+                });
+            });
+            
+            function showIqResult() {
+                clearInterval(iqTimer);
+                document.getElementById('iq-result').classList.add('active');
+                
+                // Calculate score
+                let score = 0;
+                for (const question in iqAnswers) {
+                    if (iqAnswers[question] === 'correct') {
+                        score++;
+                    }
+                }
+                
+                // Map score to IQ (simplified for demo)
+                const iqScore = 90 + (score * 5);
+                document.getElementById('iq-score').textContent = iqScore;
+                
+                // Description based on score
+                let description = '';
+                if (iqScore < 90) description = 'This places you in the below average range.';
+                else if (iqScore < 110) description = 'This places you in the average range.';
+                else if (iqScore < 130) description = 'This places you in the above average range.';
+                else description = 'This places you in the superior range.';
+                
+                document.getElementById('iq-description').textContent = description;
+                
+                // Update profile stats
+                document.querySelector('.profile-stats .stat-card:nth-child(2) .stat-value').textContent = iqScore;
+            }
+            
+            // Restart buttons
+            document.getElementById('politics-restart').addEventListener('click', () => {
+                document.getElementById('politics-result').classList.remove('active');
+                politicsQuestions.forEach((question, index) => {
+                    if (index === 0) {
+                        question.classList.add('active');
+                    } else {
+                        question.classList.remove('active');
+                    }
+                });
+                document.getElementById('politics-progress').style.width = '0%';
+                politicsAnswers = [];
+                currentPoliticsQuestion = 1;
+            });
+            
+            document.getElementById('iq-restart').addEventListener('click', () => {
+                document.getElementById('iq-result').classList.remove('active');
+                iqQuestions.forEach((question, index) => {
+                    if (index === 0) {
+                        question.classList.add('active');
+                    } else {
+                        question.classList.remove('active');
+                    }
+                });
+                document.getElementById('iq-progress').style.width = '0%';
+                iqAnswers = [];
+                currentIqQuestion = 1;
+                startIqTimer();
+            });
+            
+            // Feedback form submission
+            document.querySelector('#faq .btn').addEventListener('click', () => {
+                alert('Thank you for your feedback! In a real implementation, this would be sent to our servers.');
+            });
+        });
+    </script>
+</body>
+</html>
