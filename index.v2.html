@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iQorum - Intelligent Political Discourse</title>
+    <!-- Link external CSS files -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-brain logo-icon"></i>
+                <span>iQorum</span>
+            </div>
+            <div class="tagline">Reason. Discourse. Decision.</div>
+            <button class="login-btn">Sign In</button>
+        </header>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="home"><i class="fas fa-home"></i> Home</div>
+            <div class="tab" data-tab="politics"><i class="fas fa-landmark"></i> Politics</div>
+            <div class="tab" data-tab="iq"><i class="fas fa-brain"></i> IQ Test</div>
+            <div class="tab" data-tab="discovery"><i class="fas fa-compass"></i> Discovery</div>
+            <div class="tab" data-tab="forum"><i class="fas fa-comments"></i> Forum</div>
+            <div class="tab" data-tab="profile"><i class="fas fa-user"></i> Profile</div>
+            <div class="tab" data-tab="faq"><i class="fas fa-question-circle"></i> FAQ</div>
+        </div>
+        
+        <div class="content">
+            <div class="section active" id="home">
+                <div class="welcome">
+                    <h2>Welcome to iQorum</h2>
+                    <p>Discover your political leanings and estimate your cognitive abilities with our scientifically-designed assessments.</p>
+                    
+                    <div class="app-card" data-app="politics">
+                        <h3>Political Compass Test</h3>
+                        <p>10 questions to determine your political orientation</p>
+                        <button class="btn">Start Test</button>
+                    </div>
+                    
+                    <div class="app-card" data-app="iq">
+                        <h3>IQ Assessment</h3>
+                        <p>Timed 10-question test to estimate your IQ</p>
+                        <button class="btn">Start Test</button>
+                    </div>
+                    
+                    <div class="subscription-info">
+                        <h3>Premium Membership</h3>
+                        <ul class="benefits-list">
+                            <li><i class="fas fa-check-circle"></i> Access to exclusive subscriber forums</li>
+                            <li><i class="fas fa-check-circle"></i> Detailed analytics of your test results</li>
+                            <li><i class="fas fa-check-circle"></i> Personalized recommendations</li>
+                            <li><i class="fas fa-check-circle"></i> Ad-free experience</li>
+                        </ul>
+                        <button class="btn btn-accent">Subscribe Now</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section" id="politics">
+                <div class="progress-bar">
+                    <div class="progress" id="politics-progress"></div>
+                </div>
+                
+                <!-- Questions will be dynamically injected here by iQorum.js -->
+                <div id="politics-question-container">
+                    <div class="question active">
+                        <div class="question-text">Loading political questions...</div>
+                    </div>
+                </div>
+                
+                <div id="politics-result" class="result" style="display: none;">
+                    <h3>Your Political Compass</h3>
+                    <p>Based on your answers, your political orientation is:</p>
+                    <div class="score" id="politics-score"></div>
+                    <div class="political-compass">
+                        <div class="compass-point" id="user-point"></div>
+                    </div>
+                    <p id="politics-description"></p>
+                    <button class="btn" id="politics-restart">Take Again</button>
+                </div>
+            </div>
+            
+            <div class="section" id="iq">
+                <div class="timer" id="iq-timer">10:00</div>
+                <div class="progress-bar">
+                    <div class="progress" id="iq-progress"></div>
+                </div>
+                
+                <!-- Questions will be dynamically injected here by iQorum.js -->
+                <div id="iq-question-container">
+                    <div class="question active">
+                        <div class="question-text">Loading IQ questions...</div>
+                    </div>
+                </div>
+                
+                <div id="iq-result" class="result" style="display: none;">
+                    <h3>Your IQ Estimate</h3>
+                    <p>Based on your performance, your estimated IQ is:</p>
+                    <div class="score" id="iq-score"></div>
+                    <p id="iq-description"></p>
+                    <button class="btn" id="iq-restart">Take Again</button>
+                </div>
+            </div>
+            
+            <div class="section" id="discovery">
+                <div class="welcome">
+                    <h2>Discovery</h2>
+                    <p>Explore insights about psychology, politics, and cognitive science.</p>
+                </div>
+                
+                <div class="discovery-grid">
+                    <div class="discovery-item">
+                        <i class="fas fa-chart-line"></i>
+                        <h4>Political Spectrum</h4>
+                        <p>Understanding left vs. right</p>
+                    </div>
+                    <div class="discovery-item">
+                        <i class="fas fa-brain"></i>
+                        <h4>IQ Basics</h4>
+                        <p>What IQ tests measure</p>
+                    </div>
+                    <div class="discovery-item">
+                        <i class="fas fa-balance-scale"></i>
+                        <h4>Cognitive Biases</h4>
+                        <p>How we think</p>
+                    </div>
+                    <div class="discovery-item">
+                        <i class="fas fa-globe"></i>
+                        <h4>Worldview</h4>
+                        <p>Shaping perspectives</p>
+                    </div>
+                    <div class="discovery-item">
+                        <i class="fas fa-book"></i>
+                        <h4>Resources</h4>
+                        <p>Further reading</p>
+                    </div>
+                    <div class="discovery-item">
+                        <i class="fas fa-user-friends"></i>
+                        <h4>About Us</h4>
+                        <p>Our methodology</p>
+                    </div>
+                </div>
+                
+                <div class="app-card">
+                    <h3>Coming Soon</h3>
+                    <p>User profiles, detailed analytics, and personalized recommendations</p>
+                    <button class="btn">Notify Me</button>
+                </div>
+            </div>
+            
+            <div class="section" id="forum">
+                <div class="welcome">
+                    <h2>Community Forum</h2>
+                    <p>Join the conversation and connect with other users.</p>
+                </div>
+                
+                <div class="forum-tabs">
+                    <div class="forum-tab active" data-forum="general">Active Discussion</div>
+                    <div class="forum-tab" data-forum="pma">PMA (Positive Mental Attitude)</div>
+                    <div class="forum-tab" data-forum="premium">Premium Lounge</div>
+                </div>
+                
+                <div class="forum-content active" id="general-forum">
+                    <div class="thread">
+                        <div class="thread-header">
+                            <span class="thread-author">JohnDoe</span>
+                            <span class="thread-date">Today, 10:24 AM</span>
+                        </div>
+                        <div class="thread-title">What do you think about the latest political developments?</div>
+                        <div class="thread-preview">I've been following the recent policy changes and wanted to get others' perspectives...</div>
+                        <div class="thread-meta">
+                            <span><i class="fas fa-comment"></i> 24 replies</span>
+                            <span><i class="fas fa-eye"></i> 143 views</span>
+                        </div>
+                    </div>
+                    
+                    <div class="thread">
+                        <div class="thread-header">
+                            <span class="thread-author">PoliticalScientist</span>
+                            <span class="thread-date">Yesterday, 4:56 PM</span>
+                        </div>
+                        <div class="thread-title">How accurate are these political tests really?</div>
+                        <div class="thread-preview">I've taken several political compass tests and sometimes get different results...</div>
+                        <div class="thread-meta">
+                            <span><i class="fas fa-comment"></i> 18 replies</span>
+                            <span><i class="fas fa-eye"></i> 98 views</span>
+                        </div>
+                    </div>
+                    
+                    <div class="thread">
+                        <div class="thread-header">
+                            <span class="thread-author">CuriousMind</span>
+                            <span class="thread-date">Yesterday, 11:30 AM</span>
+                        </div>
+                        <div class="thread-title">Recommendations for learning more about political theory?</div>
+                        <div class="thread-preview">I've become really interested in political ideologies lately and would like to...</div>
+                        <div class="thread-meta">
+                            <span><i class="fas fa-comment"></i> 32 replies</span>
+                            <span><i class="fas fa-eye"></i> 210 views</span>
+                        </div>
+                    </div>
+                    
+                    <button class="btn">Start New Thread</button>
+                </div>
+                
+                <div class="forum-content" id="pma-forum">
+                    <div class="thread">
+                        <div class="thread-header">
+                            <span class="thread-author">PositivePaul</span>
+                            <span class="thread-date">Today, 9:15 AM</span>
+                        </div>
+                        <div class="thread-title">Morning affirmations for a great day!</div>
+                        <div class="thread-preview">I start every day with these positive affirmations and they've really changed my outlook...</div>
+                        <div class="thread-meta">
+                            <span><i class="fas fa-comment"></i> 15 replies</span>
+                            <span><i class="fas fa-eye"></i> 87 views</span>
+                        </div>
+                    </div>
+                    
+                    <div class="thread">
+                        <div class="thread-header">
+                            <span class="thread-author">MindfulMary</span>
+                            <span class="thread-date">Yesterday, 7:30 PM</span>
+                        </div>
+                        <div class="thread-title">Gratitude journaling practice</div>
+                        <div class="thread-preview">I've been keeping a gratitude journal for 3 months now and wanted to share how it's...</div>
+                        <div class="thread-meta">
+                            <span><i class="fas fa-comment"></i> 22 replies</span>
+                            <span><i class="fas fa-eye"></i> 124 views</span>
+                        </div>
+                    </div>
+                    
+                    <button class="btn">Start New Thread</button>
+                </div>
+                
+                <div class="forum-content" id="premium-forum">
+                    <div class="thread locked-room">
+                        <div class="thread-header">
+                            <span class="thread-author">Admin</span>
+                            <span class="thread-date">Ongoing</span>
+                        </div>
+                        <div class="thread-title">Exclusive content for premium members</div>
+                        <div class="thread-preview">This forum is reserved for our premium subscribers. Upgrade your account to access exclusive discussions, in-depth analysis, and special content.</div>
+                        <div class="thread-meta">
+                            <span><i class="fas fa-comment"></i> 56 replies</span>
+                            <span><i class="fas fa-eye"></i> Subscribers only</span>
+                        </div>
+                    </div>
+                    
+                    <div class="subscription-info">
+                        <h3>Unlock Premium Forums</h3>
+                        <p>Upgrade your account to access exclusive subscriber-only content and discussions.</p>
+                        <button class="btn btn-accent">Subscribe Now</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section" id="profile">
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <div class="profile-avatar">JD</div>
+                        <div class="profile-info">
+                            <h2>JohnDoe</h2>
+                            <p>Member since January 2023</p>
+                        </div>
+                    </div>
+                    
+                    <div class="privacy-note">
+                        <i class="fas fa-shield-alt"></i>
+                        Your privacy is protected. Only your username and test results are visible to others.
+                    </div>
+                    
+                    <div class="profile-stats">
+                        <div class="stat-card">
+                            <div class="stat-value">Centrist</div>
+                            <div class="stat-label">Political POS</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">124</div>
+                            <div class="stat-label">IQ Level</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Tests Taken</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">28</div>
+                            <div class="stat-label">Forum Posts</div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-section">
+                        <h3>Test History</h3>
+                        <ul class="test-history">
+                            <li>
+                                <div class="test-info">
+                                    <div class="test-name">Political Compass Test</div>
+                                    <div class="test-date">Completed on: October 15, 2023</div>
+                                </div>
+                                <div class="test-result">Centrist</div>
+                            </li>
+                            <li>
+                                <div class="test-info">
+                                    <div class="test-name">IQ Assessment</div>
+                                    <div class="test-date">Completed on: October 10, 2023</div>
+                                </div>
+                                <div class="test-result">124</div>
+                            </li>
+                            <li>
+                                <div class="test-info">
+                                    <div class="test-name">Political Compass Test</div>
+                                    <div class="test-date">Completed on: September 28, 2023</div>
+                                </div>
+                                <div class="test-result">Center-Left</div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="profile-section">
+                        <h3>Recent Forum Activity</h3>
+                        <ul class="test-history">
+                            <li>
+                                <div class="test-info">
+                                    <div class="test-name">How accurate are these political tests really?</div>
+                                    <div class="test-date">Posted in: Active Discussion</div>
+                                </div>
+                                <div class="test-result">18 replies</div>
+                            </li>
+                            <li>
+                                <div class="test-info">
+                                    <div class="test-name">Morning affirmations for a great day!</div>
+                                    <div class="test-date">Posted in: PMA</div>
+                                </div>
+                                <div class="test-result">5 replies</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section" id="faq">
+                <div class="welcome">
+                    <h2>Frequently Asked Questions</h2>
+                    <p>Find answers to common questions about our platform and tests.</p>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">How accurate are the political test results? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-answer" style="display: none;">Our political test is based on established political science frameworks and has been validated through extensive research. However, it's important to remember that these tests provide an estimate of your political leanings rather than a definitive categorization.</div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Is the IQ test a real IQ assessment? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-answer" style="display: none;">Our IQ test is designed to provide an estimate of your cognitive abilities based on pattern recognition, logical reasoning, and problem-solving skills. While it correlates with standard IQ measures, it is not a substitute for a professionally administered IQ test.</div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">How can I access premium features? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-answer" style="display: none;">Premium features can be accessed by subscribing to our monthly or annual plan. This includes detailed analytics, personalized recommendations, and access to exclusive subscriber forums.</div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">How do I reset my password? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-answer" style="display: none;">You can reset your password by going to the login page and clicking on "Forgot Password". You'll receive an email with instructions to reset your password.</div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">What information is visible on my public profile? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-answer" style="display: none;">For privacy reasons, only your username, political orientation, and IQ level are visible to other users. Your email address and other personal information are never displayed publicly.</div>
+                </div>
+                
+                <div class="feedback-form">
+                    <h3>Submit Feedback</h3>
+                    <p>We value your input! Let us know how we can improve.</p>
+                    
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" placeholder="Your name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="Your email address">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category">
+                            <option value="">Select a category</option>
+                            <option value="test">Test Accuracy</option>
+                            <option value="ui">User Interface</option>
+                            <option value="feature">Feature Request</option>
+                            <option value="bug">Bug Report</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Your Feedback</label>
+                        <textarea id="message" placeholder="Please provide your feedback here..."></textarea>
+                    </div>
+                    
+                    <button class="btn">Submit Feedback</button>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>iQorum &copy; 2023 | Privacy Policy | Terms of Service</p>
+        </footer>
+    </div>
+
+    <!-- Link the external JavaScript file -->
+    <script src="iQorum.js"></script>
+</body>
+</html>
