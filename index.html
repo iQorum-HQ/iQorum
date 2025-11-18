@@ -81,21 +81,44 @@
                 </div>
             </div>
             
-            <!-- IQ Test Section (Questions will be loaded from JSON) -->
+            <!-- IQ Test Section (Improved Version) -->
             <div class="section" id="iq">
-                <div class="timer" id="iq-timer">10:00</div>
-                <div class="progress-bar">
-                    <div class="progress" id="iq-progress"></div>
+                <!-- Start Screen -->
+                <div id="iq-start" class="text-center">
+                    <div class="welcome">
+                        <h2>IQ Assessment</h2>
+                        <p>Test your cognitive abilities with 10 timed questions</p>
+                        <div class="app-card">
+                            <h3>Test Rules</h3>
+                            <ul class="benefits-list">
+                                <li><i class="fas fa-clock"></i> 10-minute time limit</li>
+                                <li><i class="fas fa-brain"></i> 10 randomly selected questions</li>
+                                <li><i class="fas fa-chart-line"></i> Score based on accuracy and speed</li>
+                                <li><i class="fas fa-sync"></i> Different questions each attempt</li>
+                            </ul>
+                            <button class="btn btn-accent" id="iq-start-btn">Start IQ Test</button>
+                        </div>
+                    </div>
                 </div>
-                <div id="iq-questions-container">
-                    <!-- Questions will be loaded here dynamically from JSON -->
-                </div>
-                <div id="iq-result" class="result">
-                    <h3>Your IQ Estimate</h3>
-                    <p>Based on your performance, your estimated IQ is:</p>
-                    <div class="score" id="iq-score">120</div>
-                    <p id="iq-description">This places you in the above average range compared to the general population.</p>
-                    <button class="btn" id="iq-restart">Take Again</button>
+
+                <!-- Test Screen (initially hidden) -->
+                <div id="iq-test" style="display: none;">
+                    <div class="timer" id="iq-timer">10:00</div>
+                    <div class="progress-bar">
+                        <div class="progress" id="iq-progress"></div>
+                    </div>
+                    
+                    <div id="iq-questions-container">
+                        <!-- Questions will be loaded here dynamically -->
+                    </div>
+                    
+                    <div id="iq-result" class="result">
+                        <h3>Your IQ Estimate</h3>
+                        <p>Based on your performance, your estimated IQ is:</p>
+                        <div class="score" id="iq-score">120</div>
+                        <p id="iq-description">This places you in the above average range compared to the general population.</p>
+                        <button class="btn" id="iq-restart">Take Again</button>
+                    </div>
                 </div>
             </div>
             
