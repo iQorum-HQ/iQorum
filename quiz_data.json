@@ -1,0 +1,346 @@
+[
+  {
+    "type": "politics",
+    "id": 1,
+    "text": "What should be the government's primary role in the economy?",
+    "options": [
+      {
+        "text": "Minimal intervention, free markets work best",
+        "value": "lib"
+      },
+      {
+        "text": "Strong regulation to protect workers and consumers",
+        "value": "auth"
+      },
+      {
+        "text": "Redistribution of wealth and public ownership",
+        "value": "left"
+      },
+      {
+        "text": "Creating favorable conditions for business growth",
+        "value": "right"
+      }
+    ]
+  },
+  {
+    "type": "politics",
+    "id": 2,
+    "text": "How should society address income inequality?",
+    "options": [
+      {
+        "text": "Progressive taxation and wealth redistribution",
+        "value": "left"
+      },
+      {
+        "text": "Encourage entrepreneurship and economic growth",
+        "value": "right"
+      },
+      {
+        "text": "Reduce government and let charity address needs",
+        "value": "lib"
+      },
+      {
+        "text": "Government should mandate living wages and price controls",
+        "value": "auth"
+      }
+    ]
+  },
+  {
+    "type": "politics",
+    "id": 3,
+    "text": "What is your view on national defense spending?",
+    "options": [
+      {
+        "text": "Significantly reduce military spending",
+        "value": "left"
+      },
+      {
+        "text": "Maintain current levels with more oversight",
+        "value": "lib"
+      },
+      {
+        "text": "Increase spending to ensure national security",
+        "value": "right"
+      },
+      {
+        "text": "Spend whatever is necessary for absolute security",
+        "value": "auth"
+      }
+    ]
+  },
+  {
+    "type": "politics",
+    "id": 4,
+    "text": "How should healthcare be provided?",
+    "options": [
+      {
+        "text": "Universal healthcare funded by taxes",
+        "value": "left"
+      },
+      {
+        "text": "Government-regulated private system with mandates",
+        "value": "auth"
+      },
+      {
+        "text": "Private healthcare with minimal government involvement",
+        "value": "right"
+      },
+      {
+        "text": "Free market solutions with charity for those in need",
+        "value": "lib"
+      }
+    ]
+  },
+  {
+    "type": "politics",
+    "id": 5,
+    "text": "What is your stance on immigration?",
+    "options": [
+      {
+        "text": "Open borders with path to citizenship for all",
+        "value": "left"
+      },
+      {
+        "text": "Moderate immigration with simplified processes",
+        "value": "lib"
+      },
+      {
+        "text": "Strict vetting with emphasis on economic contribution",
+        "value": "right"
+      },
+      {
+        "text": "Strong borders with limited immigration",
+        "value": "auth"
+      }
+    ]
+  },
+  {
+    "type": "politics",
+    "id": 6,
+    "text": "How should education be managed?",
+    "options": [
+      {
+        "text": "Fully public education with equal funding for all",
+        "value": "left"
+      },
+      {
+        "text": "National standards with government oversight",
+        "value": "auth"
+      },
+      {
+        "text": "School choice with private options",
+        "value": "right"
+      },
+      {
+        "text": "Complete privatization of education",
+        "value": "lib"
+      }
+    ]
+  },
+  {
+    "type": "politics",
+    "id": 7,
+    "text": "What is your view on environmental regulation?",
+    "options": [
+      {
+        "text": "Strong regulations to protect the environment at any cost",
+        "value": "left"
+      },
+      {
+        "text": "Government should set and enforce strict standards",
+        "value": "auth"
+      },
+      {
+        "text": "Balance between environment and economic growth",
+        "value": "right"
+      },
+      {
+        "text": "Market-based solutions without heavy regulation",
+        "value": "lib"
+      }
+    ]
+  },
+  {
+    "type": "politics",
+    "id": 8,
+    "text": "How should social issues like marriage be handled?",
+    "options": [
+      {
+        "text": "Government should ensure equal rights for all",
+        "value": "left"
+      },
+      {
+        "text": "Government should not be involved in personal relationships",
+        "value": "lib"
+      },
+      {
+        "text": "Traditional values should be promoted",
+        "value": "right"
+      },
+      {
+        "text": "Government should enforce moral standards",
+        "value": "auth"
+      }
+    ]
+  },
+  {
+    "type": "politics",
+    "id": 9,
+    "text": "What is your view on gun control?",
+    "options": [
+      {
+        "text": "Strict gun control measures",
+        "value": "left"
+      },
+      {
+        "text": "Licensing and registration requirements",
+        "value": "auth"
+      },
+      {
+        "text": "Protect Second Amendment rights",
+        "value": "right"
+      },
+      {
+        "text": "Minimal restrictions on gun ownership",
+        "value": "lib"
+      }
+    ]
+  },
+  {
+    "type": "politics",
+    "id": 10,
+    "text": "How should government address crime?",
+    "options": [
+      {
+        "text": "Address root causes through social programs",
+        "value": "left"
+      },
+      {
+        "text": "Strong law enforcement and longer sentences",
+        "value": "auth"
+      },
+      {
+        "text": "Support police and punish offenders",
+        "value": "right"
+      },
+      {
+        "text": "Focus on individual rights and limited policing",
+        "value": "lib"
+      }
+    ]
+  },
+  {
+    "type": "iq",
+    "id": 1,
+    "text": "Which number comes next in the sequence: 2, 4, 8, 16, ?",
+    "correctAnswer": "32",
+    "options": [
+      "24",
+      "32",
+      "30",
+      "18"
+    ]
+  },
+  {
+    "type": "iq",
+    "id": 2,
+    "text": "If all Bloops are Razzies and all Razzies are Lazzies, then all Bloops are definitely Lazzies?",
+    "correctAnswer": "True",
+    "options": [
+      "True",
+      "False"
+    ]
+  },
+  {
+    "type": "iq",
+    "id": 3,
+    "text": "Which word does not belong: Apple, Banana, Carrot, Orange",
+    "correctAnswer": "Carrot",
+    "options": [
+      "Apple",
+      "Banana",
+      "Carrot",
+      "Orange"
+    ]
+  },
+  {
+    "type": "iq",
+    "id": 4,
+    "text": "If you rearrange the letters \"CIFAIPC\" you would have the name of a(n):",
+    "correctAnswer": "Ocean",
+    "options": [
+      "City",
+      "Animal",
+      "Ocean",
+      "Country"
+    ]
+  },
+  {
+    "type": "iq",
+    "id": 5,
+    "text": "Which one of the five is least like the other four?",
+    "correctAnswer": "Snake",
+    "options": [
+      "Dog",
+      "Mouse",
+      "Lion",
+      "Snake"
+    ]
+  },
+  {
+    "type": "iq",
+    "id": 6,
+    "text": "If some Wocks are Sliobs, and some Sliobs are Enacs, then some Wocks are definitely Enacs.",
+    "correctAnswer": "False",
+    "options": [
+      "True",
+      "False"
+    ]
+  },
+  {
+    "type": "iq",
+    "id": 7,
+    "text": "Which number should come next in the pattern: 37, 34, 31, 28, ?",
+    "correctAnswer": "25",
+    "options": [
+      "26",
+      "25",
+      "23",
+      "21"
+    ]
+  },
+  {
+    "type": "iq",
+    "id": 8,
+    "text": "Choose the word most similar to \"Trust\":",
+    "correctAnswer": "Confidence",
+    "options": [
+      "Doubt",
+      "Suspect",
+      "Confidence",
+      "Question"
+    ]
+  },
+  {
+    "type": "iq",
+    "id": 9,
+    "text": "If all Zips are Zaps and some Zaps are Zops, then some Zips are definitely Zops.",
+    "correctAnswer": "False",
+    "options": [
+      "True",
+      "False"
+    ]
+  },
+  {
+    "type": "iq",
+    "id": 10,
+    "text": "What is the missing number in the sequence: 4, 9, 16, 25, ?",
+    "correctAnswer": "36",
+    "options": [
+      "34",
+      "38",
+      "36",
+      "41"
+    ]
+  }
+]
