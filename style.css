@@ -117,6 +117,21 @@ header {
     text-align: center;
 }
 
+/* Fix icon spacing in tabs */
+.tab i {
+    margin-right: 8px;
+    width: 16px;
+    text-align: center;
+}
+
+/* Ensure consistent spacing */
+.tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
 .content {
     flex: 1;
     display: flex;
