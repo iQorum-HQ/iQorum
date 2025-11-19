@@ -266,15 +266,74 @@ document.addEventListener('DOMContentLoaded', function() {
             return { x, y, label, description };
         }
         
-        // IQ test logic
-        const iqQuestions = document.querySelectorAll('#iq .question');
-        let iqAnswers = [];
+        // IQ Test Logic - Completely Revised
+        let iqQuestions = [];
         let currentIqQuestion = 1;
-        let timeLeft = 600; // 10 minutes in seconds
+        let iqAnswers = [];
+        let timeLeft = 600; // 10 minutes
         let iqTimer;
+        let testStartTime;
         
-        // Start timer when IQ test is opened
-        document.querySelector('.tab[data-tab="iq"]').addEventListener('click', startIqTimer);
+        // Start test when button is clicked
+        document.getElementById('iq-start-btn').addEventListener('click', startIqTest);
+        
+        function startIqTest() {
+            // Hide start screen, show test screen
+            document.getElementById('iq-start').style.display = 'none';
+            document.getElementById('iq-test').style.display = 'block';
+            
+            // Load and randomize questions
+            loadRandomIQQuestions();
+            
+            // Start timer
+            testStartTime = Date.now();
+            startIqTimer();
+        }
+        
+        function loadRandomIQQuestions() {
+            const container = document.getElementById('iq-questions-container');
+            container.innerHTML = '';
+            
+            // Get all IQ questions and shuffle them
+            const allQuestions = quizData.filter(q => q.type === 'iq');
+            iqQuestions = shuffleArray(allQuestions).slice(0, 10); // Pick 10 random questions
+            
+            // Generate the questions
+            iqQuestions.forEach((question, index) => {
+                const questionElement = document.createElement('div');
+                questionElement.className = `question ${index === 0 ? 'active' : ''}`;
+                questionElement.id = `iq-question-${index + 1}`;
+                
+                // Shuffle the options
+                const shuffledOptions = shuffleArray([...question.options]);
+                
+                questionElement.innerHTML = `
+                    <div class="question-text">${index + 1}. ${question.text}</div>
+                    <div class="options">
+                        ${shuffledOptions.map(option => {
+                            const isCorrect = option === question.correctAnswer;
+                            return `<div class="option" data-value="${isCorrect ? 'correct' : 'incorrect'}">${option}</div>`;
+                        }).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(questionElement);
+            });
+            
+            // Reset test state
+            currentIqQuestion = 1;
+            iqAnswers = [];
+        }
+        
+        // Fisher-Yates shuffle algorithm
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
         
         function startIqTimer() {
             clearInterval(iqTimer);
@@ -299,7 +358,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
         
-        // IQ option click handlers (using event delegation)
+        // IQ option click handlers
         document.getElementById('iq-questions-container').addEventListener('click', function(e) {
             if (e.target.classList.contains('option')) {
                 const option = e.target;
@@ -311,9 +370,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 option.classList.add('selected');
                 
-                // Store answer
+                // Store answer with timestamp
                 const questionId = questionElement.id;
-                iqAnswers[questionId] = option.getAttribute('data-value');
+                const questionIndex = parseInt(questionId.split('-')[2]) - 1;
+                const answerTime = Date.now() - testStartTime;
+                
+                iqAnswers[questionIndex] = {
+                    answer: option.getAttribute('data-value'),
+                    time: answerTime,
+                    question: iqQuestions[questionIndex]
+                };
                 
                 // Update progress
                 const progressPercentage = (currentIqQuestion / 10) * 100;
@@ -338,59 +404,72 @@ document.addEventListener('DOMContentLoaded', function() {
             clearInterval(iqTimer);
             document.getElementById('iq-result').classList.add('active');
             
-            // Calculate score
-            let score = 0;
-            for (const question in iqAnswers) {
-                if (iqAnswers[question] === 'correct') {
-                    score++;
-                }
+            // Calculate total test time
+            const totalTestTime = (Date.now() - testStartTime) / 1000; // Convert to seconds
+            
+            // Calculate score based on accuracy and speed
+            const result = calculateIQScore(iqAnswers, totalTestTime);
+            
+            document.getElementById('iq-score').textContent = result.iqScore;
+            document.getElementById('iq-description').textContent = result.description;
+            
+            // update profile stats
+            document.querySelector('.profile-stats .stat-card:nth-child(2) .stat-value').textContent = result.iqScore;
+        }
+        
+        function calculateIQScore(answers, totalTimeSeconds) {
+            const maxPoints = 170;
+            const correctAnswers = answers.filter(a => a && a.answer === 'correct').length;
+            const accuracy = answers.length > 0 ? correctAnswers / answers.length : 0;
+            
+            // Convert totalTime from milliseconds to seconds and average per question
+            const totalTimeMs = answers.reduce((sum, answer) => sum + (answer ? answer.time : 0), 0);
+            const avgTimeSeconds = answers.length > 0 ? (totalTimeMs / 1000) / answers.length : totalTimeSeconds;
+            
+            // Time penalty: steep drops as time increases
+            let timePenalty = 0;
+            
+            if (avgTimeSeconds <= 30) {
+                timePenalty = 0; // Perfect speed - 170 points
+            } else if (avgTimeSeconds <= 60) {
+                timePenalty = 10; // 1 min - 160 points
+            } else if (avgTimeSeconds <= 120) {
+                timePenalty = 40; // 2 min - 130 points  
+            } else if (avgTimeSeconds <= 180) {
+                timePenalty = 60; // 3 min - 110 points
+            } else if (avgTimeSeconds <= 240) {
+                timePenalty = 70; // 4 min - 100 points
+            } else if (avgTimeSeconds <= 300) {
+                timePenalty = 80; // 5 min - 90 points
+            } else {
+                timePenalty = 100; // 6+ min - 70 points max
             }
             
-            // Map score to IQ (simplified for demo)
-            const iqScore = 90 + (score * 5);
-            document.getElementById('iq-score').textContent = iqScore;
+            // Accuracy penalty: lose points for wrong answers
+            const accuracyPenalty = (1 - accuracy) * 50; // Up to 50 points lost for all wrong
+            
+            const totalScore = maxPoints - timePenalty - accuracyPenalty;
+            const finalScore = Math.max(70, Math.min(170, Math.round(totalScore)));
             
             // Description based on score
             let description = '';
-            if (iqScore < 90) description = 'This places you in the below average range.';
-            else if (iqScore < 110) description = 'This places you in the average range.';
-            else if (iqScore < 130) description = 'This places you in the above average range.';
+            if (finalScore < 90) description = 'This places you in the below average range.';
+            else if (finalScore < 110) description = 'This places you in the average range.';
+            else if (finalScore < 130) description = 'This places you in the above average range.';
             else description = 'This places you in the superior range.';
             
-            document.getElementById('iq-description').textContent = description;
-            
-            // Update profile stats
-            document.querySelector('.profile-stats .stat-card:nth-child(2) .stat-value').textContent = iqScore;
+            return {
+                iqScore: finalScore,
+                description: description
+            };
         }
         
-        // Restart buttons
-        document.getElementById('politics-restart').addEventListener('click', () => {
-            document.getElementById('politics-result').classList.remove('active');
-            politicsQuestions.forEach((question, index) => {
-                if (index === 0) {
-                    question.classList.add('active');
-                } else {
-                    question.classList.remove('active');
-                }
-            });
-            document.getElementById('politics-progress').style.width = '0%';
-            politicsAnswers = [];
-            currentPoliticsQuestion = 1;
-        });
-        
+        // Update restart button
         document.getElementById('iq-restart').addEventListener('click', () => {
             document.getElementById('iq-result').classList.remove('active');
-            iqQuestions.forEach((question, index) => {
-                if (index === 0) {
-                    question.classList.add('active');
-                } else {
-                    question.classList.remove('active');
-                }
-            });
+            document.getElementById('iq-start').style.display = 'block';
+            document.getElementById('iq-test').style.display = 'none';
             document.getElementById('iq-progress').style.width = '0%';
-            iqAnswers = [];
-            currentIqQuestion = 1;
-            startIqTimer();
         });
         
         // Feedback form submission

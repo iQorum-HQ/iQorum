@@ -100,6 +100,10 @@ header {
     transition: all 0.3s ease;
     border-bottom: 3px solid transparent;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
 .tab.active {
@@ -109,6 +113,23 @@ header {
 
 .tab i {
     margin-right: 5px;
+    width: 16px;
+    text-align: center;
+}
+
+/* Fix icon spacing in tabs */
+.tab i {
+    margin-right: 8px;
+    width: 16px;
+    text-align: center;
+}
+
+/* Ensure consistent spacing */
+.tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
 .content {
