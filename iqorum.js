@@ -404,61 +404,63 @@ document.addEventListener('DOMContentLoaded', function() {
             clearInterval(iqTimer);
             document.getElementById('iq-result').classList.add('active');
             
+            // Calculate total test time
+            const totalTestTime = (Date.now() - testStartTime) / 1000; // Convert to seconds
+            
             // Calculate score based on accuracy and speed
-            const result = calculateIQScore(iqAnswers);
+            const result = calculateIQScore(iqAnswers, totalTestTime);
             
             document.getElementById('iq-score').textContent = result.iqScore;
             document.getElementById('iq-description').textContent = result.description;
             
-            // Update profile stats
+            // update profile stats
             document.querySelector('.profile-stats .stat-card:nth-child(2) .stat-value').textContent = result.iqScore;
         }
         
-        function calculateIQScore(answers) {
-            let correctAnswers = 0;
-            let totalTime = 0;
-            let answeredQuestions = 0;
+        function calculateIQScore(answers, totalTimeSeconds) {
+            const maxPoints = 170;
+            const correctAnswers = answers.filter(a => a && a.answer === 'correct').length;
+            const accuracy = answers.length > 0 ? correctAnswers / answers.length : 0;
             
-            // Calculate accuracy and average time
-            for (let i = 0; i < answers.length; i++) {
-                if (answers[i]) {
-                    answeredQuestions++;
-                    if (answers[i].answer === 'correct') {
-                        correctAnswers++;
-                    }
-                    totalTime += answers[i].time;
-                }
+            // Convert totalTime from milliseconds to seconds and average per question
+            const totalTimeMs = answers.reduce((sum, answer) => sum + (answer ? answer.time : 0), 0);
+            const avgTimeSeconds = answers.length > 0 ? (totalTimeMs / 1000) / answers.length : totalTimeSeconds;
+            
+            // Time penalty: steep drops as time increases
+            let timePenalty = 0;
+            
+            if (avgTimeSeconds <= 30) {
+                timePenalty = 0; // Perfect speed - 170 points
+            } else if (avgTimeSeconds <= 60) {
+                timePenalty = 10; // 1 min - 160 points
+            } else if (avgTimeSeconds <= 120) {
+                timePenalty = 40; // 2 min - 130 points  
+            } else if (avgTimeSeconds <= 180) {
+                timePenalty = 60; // 3 min - 110 points
+            } else if (avgTimeSeconds <= 240) {
+                timePenalty = 70; // 4 min - 100 points
+            } else if (avgTimeSeconds <= 300) {
+                timePenalty = 80; // 5 min - 90 points
+            } else {
+                timePenalty = 100; // 6+ min - 70 points max
             }
             
-            const accuracy = answeredQuestions > 0 ? (correctAnswers / answeredQuestions) * 100 : 0;
-            const avgTime = answeredQuestions > 0 ? totalTime / answeredQuestions : 0;
+            // Accuracy penalty: lose points for wrong answers
+            const accuracyPenalty = (1 - accuracy) * 50; // Up to 50 points lost for all wrong
             
-            // Advanced scoring: Base IQ + accuracy bonus + speed bonus
-            let iqScore = 90; // Base score
-            
-            // Accuracy bonus (up to +30 points)
-            iqScore += (accuracy / 100) * 30;
-            
-            // Speed bonus (faster = better, up to +20 points)
-            const maxTime = 600000; // 10 minutes in milliseconds
-            const timeBonus = 20 * (1 - (avgTime / maxTime));
-            iqScore += Math.max(0, timeBonus);
-            
-            // Cap at realistic range
-            iqScore = Math.min(150, Math.max(70, Math.round(iqScore)));
+            const totalScore = maxPoints - timePenalty - accuracyPenalty;
+            const finalScore = Math.max(70, Math.min(170, Math.round(totalScore)));
             
             // Description based on score
             let description = '';
-            if (iqScore < 90) description = 'This places you in the below average range.';
-            else if (iqScore < 110) description = 'This places you in the average range.';
-            else if (iqScore < 130) description = 'This places you in the above average range.';
+            if (finalScore < 90) description = 'This places you in the below average range.';
+            else if (finalScore < 110) description = 'This places you in the average range.';
+            else if (finalScore < 130) description = 'This places you in the above average range.';
             else description = 'This places you in the superior range.';
             
             return {
-                iqScore: iqScore,
-                description: description,
-                accuracy: Math.round(accuracy),
-                avgTime: Math.round(avgTime / 1000) // Convert to seconds
+                iqScore: finalScore,
+                description: description
             };
         }
         
