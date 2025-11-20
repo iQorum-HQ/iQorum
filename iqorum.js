@@ -1,3 +1,5 @@
+import './src/config.js';
+
 document.addEventListener('DOMContentLoaded', function() {
     let quizData = {};
     
