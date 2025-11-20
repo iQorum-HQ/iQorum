@@ -1,0 +1,30 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# API Keys and secrets
+config.json
+secrets/
+keys/
+
+# Node.js (if you add backend later)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/  # Optional - you can keep this if you want to share VS Code settings
+.idea/
+
+# Logs
+*.log
