@@ -1,8 +1,33 @@
-import './src/config.js';
-
 document.addEventListener('DOMContentLoaded', function() {
     let quizData = {};
     
+    // Test completion tracking - MOVED TO TOP LEVEL
+    let testResults = {
+        politics: {
+            completed: false,
+            score: null,
+            label: '',
+            description: '',
+            lastUpdated: null
+        },
+        iq: {
+            completed: false,
+            score: null,
+            timeTaken: null,
+            lastUpdated: null
+        }
+    };
+
+    // Load saved results
+    try {
+        const savedResults = localStorage.getItem('iQorumTestResults');
+        if (savedResults) {
+            testResults = JSON.parse(savedResults);
+        }
+    } catch (e) {
+        console.error('Error loading saved results:', e);
+    }
+
     // Load quiz data from JSON file
     fetch('quiz_data.json')
         .then(response => response.json())
@@ -25,6 +50,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Initialize all other functionality
         initializeApp();
+        
+        // Initialize home tab buttons AFTER everything is loaded
+        updateHomeTabButtons();
+        
+        // Update profile page with saved results
+        updateProfilePage();
     }
 
     function generatePoliticsQuestions() {
@@ -70,6 +101,204 @@ document.addEventListener('DOMContentLoaded', function() {
             
             container.appendChild(questionElement);
         });
+    }
+
+    function updateHomeTabButtons() {
+        // Find the home tab content
+        const homeSection = document.getElementById('home');
+        if (!homeSection) return;
+        
+        // Update Politics Test button
+        const politicsBtn = homeSection.querySelector('.btn[data-test="politics"]');
+        if (politicsBtn) {
+            if (testResults.politics.completed) {
+                politicsBtn.textContent = `View Results: ${testResults.politics.label}`;
+                politicsBtn.classList.remove('btn-accent');
+                politicsBtn.classList.add('btn-secondary');
+                // Remove existing click handlers first
+                politicsBtn.replaceWith(politicsBtn.cloneNode(true));
+                const newPoliticsBtn = homeSection.querySelector('.btn[data-test="politics"]');
+                newPoliticsBtn.addEventListener('click', () => {
+                    // Navigate to politics tab and show results
+                    document.querySelector('.tab[data-tab="politics"]').click();
+                    // Ensure results section is active
+                    document.getElementById('politics-result').classList.add('active');
+                });
+            } else {
+                politicsBtn.textContent = 'Start Politics Test';
+                politicsBtn.classList.remove('btn-secondary');
+                politicsBtn.classList.add('btn-accent');
+                // Remove existing click handlers first
+                politicsBtn.replaceWith(politicsBtn.cloneNode(true));
+                const newPoliticsBtn = homeSection.querySelector('.btn[data-test="politics"]');
+                newPoliticsBtn.addEventListener('click', () => {
+                    document.querySelector('.tab[data-tab="politics"]').click();
+                });
+            }
+        }
+        
+        // Update IQ Test button
+        const iqBtn = homeSection.querySelector('.btn[data-test="iq"]');
+        if (iqBtn) {
+            if (testResults.iq.completed) {
+                iqBtn.textContent = `View IQ Score: ${testResults.iq.score}`;
+                iqBtn.classList.remove('btn-accent');
+                iqBtn.classList.add('btn-secondary');
+                // Remove existing click handlers first
+                iqBtn.replaceWith(iqBtn.cloneNode(true));
+                const newIqBtn = homeSection.querySelector('.btn[data-test="iq"]');
+                newIqBtn.addEventListener('click', () => {
+                    document.querySelector('.tab[data-tab="iq"]').click();
+                    // Show IQ results if available
+                    document.getElementById('iq-result').classList.add('active');
+                });
+            } else {
+                iqBtn.textContent = 'Start IQ Test';
+                iqBtn.classList.remove('btn-secondary');
+                iqBtn.classList.add('btn-accent');
+                // Remove existing click handlers first
+                iqBtn.replaceWith(iqBtn.cloneNode(true));
+                const newIqBtn = homeSection.querySelector('.btn[data-test="iq"]');
+                newIqBtn.addEventListener('click', () => {
+                    document.querySelector('.tab[data-tab="iq"]').click();
+                });
+            }
+        }
+    }
+
+    function updateProfilePage() {
+        // Update political compass on profile
+        const politicsStat = document.querySelector('.profile-stats .stat-card:nth-child(1) .stat-value');
+        if (politicsStat) {
+            if (testResults.politics.completed) {
+                politicsStat.textContent = testResults.politics.label;
+            } else {
+                politicsStat.textContent = '--';
+            }
+        }
+        
+        // Update IQ score on profile
+        const iqStat = document.querySelector('.profile-stats .stat-card:nth-child(2) .stat-value');
+        if (iqStat) {
+            if (testResults.iq.completed) {
+                iqStat.textContent = testResults.iq.score;
+            } else {
+                iqStat.textContent = '--';
+            }
+        }
+        
+        // Update tests taken counter
+        const testsTakenStat = document.querySelector('.profile-stats .stat-card:nth-child(3) .stat-value');
+        if (testsTakenStat) {
+            let testsTaken = 0;
+            if (testResults.politics.completed) testsTaken++;
+            if (testResults.iq.completed) testsTaken++;
+            testsTakenStat.textContent = testsTaken;
+        }
+        
+        // Update test history with latest results
+        updateTestHistory();
+    }
+
+    function updateTestHistory() {
+        const testHistory = document.querySelector('.test-history');
+        if (!testHistory) return;
+        
+        // Clear existing history
+        testHistory.innerHTML = '';
+        
+        // Add politics test result if completed
+        if (testResults.politics.completed) {
+            const politicsItem = document.createElement('li');
+            politicsItem.innerHTML = `
+                <div class="test-info">
+                    <div class="test-name">Political Compass Test</div>
+                    <div class="test-date">Completed on: ${new Date(testResults.politics.lastUpdated).toLocaleDateString()}</div>
+                </div>
+                <div class="test-result">${testResults.politics.label}</div>
+            `;
+            testHistory.appendChild(politicsItem);
+        }
+        
+        // Add IQ test result if completed
+        if (testResults.iq.completed) {
+            const iqItem = document.createElement('li');
+            iqItem.innerHTML = `
+                <div class="test-info">
+                    <div class="test-name">IQ Assessment</div>
+                    <div class="test-date">Completed on: ${new Date(testResults.iq.lastUpdated).toLocaleDateString()}</div>
+                </div>
+                <div class="test-result">${testResults.iq.score}</div>
+            `;
+            testHistory.appendChild(iqItem);
+        }
+        
+        // If no tests completed yet
+        if (!testResults.politics.completed && !testResults.iq.completed) {
+            const noTestsItem = document.createElement('li');
+            noTestsItem.innerHTML = `
+                <div class="test-info">
+                    <div class="test-name">No tests completed yet</div>
+                    <div class="test-date">Take a test to see your results here</div>
+                </div>
+                <div class="test-result">--</div>
+            `;
+            testHistory.appendChild(noTestsItem);
+        }
+    }
+
+    function addPoliticsRetakeButton() {
+        const resultDiv = document.getElementById('politics-result');
+        if (!resultDiv) return;
+        
+        // Remove existing retake button if present
+        const existingBtn = resultDiv.querySelector('.retake-btn');
+        if (existingBtn) existingBtn.remove();
+        
+        // Create new retake button
+        const retakeBtn = document.createElement('button');
+        retakeBtn.className = 'btn btn-accent retake-btn';
+        retakeBtn.textContent = 'Retake Politics Test';
+        retakeBtn.style.marginTop = '15px';
+        retakeBtn.style.marginLeft = '10px';
+        
+        retakeBtn.addEventListener('click', () => {
+            // Reset politics test
+            testResults.politics.completed = false;
+            testResults.politics.score = null;
+            testResults.politics.label = '';
+            testResults.politics.description = '';
+            localStorage.setItem('iQorumTestResults', JSON.stringify(testResults));
+            
+            // Reset test UI
+            document.getElementById('politics-result').classList.remove('active');
+            
+            // Show first question
+            document.querySelectorAll('#politics .question').forEach((q, i) => {
+                q.classList.remove('active');
+                if (i === 0) q.classList.add('active');
+            });
+            
+            // Clear selections
+            document.querySelectorAll('#politics .option.selected').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Reset progress bar
+            document.getElementById('politics-progress').style.width = '0%';
+            
+            // Update home tab button and profile
+            updateHomeTabButtons();
+            updateProfilePage();
+        });
+        
+        // Add button to results div
+        const scoreElement = document.getElementById('politics-score');
+        if (scoreElement) {
+            scoreElement.parentNode.appendChild(retakeBtn);
+        } else {
+            resultDiv.appendChild(retakeBtn);
+        }
     }
 
     function initializeApp() {
@@ -209,6 +438,20 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Position point on compass
                         document.getElementById('user-point').style.top = `${result.y}%`;
                         document.getElementById('user-point').style.left = `${result.x}%`;
+                        
+                        // Save results and update UI
+                        testResults.politics = {
+                            completed: true,
+                            score: `${result.x},${result.y}`,
+                            label: result.label,
+                            description: result.description,
+                            lastUpdated: new Date().toISOString()
+                        };
+
+                        localStorage.setItem('iQorumTestResults', JSON.stringify(testResults));
+                        updateHomeTabButtons();
+                        updateProfilePage();
+                        addPoliticsRetakeButton();
                     }
                 }, 800);
             }
@@ -267,8 +510,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             return { x, y, label, description };
         }
-        
-        // IQ Test Logic - Completely Revised
+
+        // IQ Test Logic
         let iqQuestions = [];
         let currentIqQuestion = 1;
         let iqAnswers = [];
@@ -277,7 +520,10 @@ document.addEventListener('DOMContentLoaded', function() {
         let testStartTime;
         
         // Start test when button is clicked
-        document.getElementById('iq-start-btn').addEventListener('click', startIqTest);
+        const iqStartBtn = document.getElementById('iq-start-btn');
+        if (iqStartBtn) {
+            iqStartBtn.addEventListener('click', startIqTest);
+        }
         
         function startIqTest() {
             // Hide start screen, show test screen
@@ -415,8 +661,23 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('iq-score').textContent = result.iqScore;
             document.getElementById('iq-description').textContent = result.description;
             
-            // update profile stats
-            document.querySelector('.profile-stats .stat-card:nth-child(2) .stat-value').textContent = result.iqScore;
+            // Save results and update UI
+            testResults.iq = {
+                completed: true,
+                score: result.iqScore,
+                timeTaken: totalTestTime,
+                lastUpdated: new Date().toISOString()
+            };
+
+            localStorage.setItem('iQorumTestResults', JSON.stringify(testResults));
+            updateHomeTabButtons();
+            updateProfilePage();
+            
+            // Update profile stats
+            const profileStats = document.querySelector('.profile-stats .stat-card:nth-child(2) .stat-value');
+            if (profileStats) {
+                profileStats.textContent = result.iqScore;
+            }
         }
         
         function calculateIQScore(answers, totalTimeSeconds) {
@@ -467,16 +728,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Update restart button
-        document.getElementById('iq-restart').addEventListener('click', () => {
-            document.getElementById('iq-result').classList.remove('active');
-            document.getElementById('iq-start').style.display = 'block';
-            document.getElementById('iq-test').style.display = 'none';
-            document.getElementById('iq-progress').style.width = '0%';
-        });
+        const iqRestartBtn = document.getElementById('iq-restart');
+        if (iqRestartBtn) {
+            iqRestartBtn.addEventListener('click', () => {
+                document.getElementById('iq-result').classList.remove('active');
+                document.getElementById('iq-start').style.display = 'block';
+                document.getElementById('iq-test').style.display = 'none';
+                document.getElementById('iq-progress').style.width = '0%';
+            });
+        }
         
         // Feedback form submission
-        document.querySelector('#faq .btn').addEventListener('click', () => {
-            alert('Thank you for your feedback! In a real implementation, this would be sent to our servers.');
-        });
+        const feedbackBtn = document.querySelector('#faq .btn');
+        if (feedbackBtn) {
+            feedbackBtn.addEventListener('click', () => {
+                alert('Thank you for your feedback! In a real implementation, this would be sent to our servers.');
+            });
+        }
     }
 });
