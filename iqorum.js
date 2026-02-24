@@ -1,311 +1,225 @@
 document.addEventListener('DOMContentLoaded', function() {
-    let quizData = {}; // Test completion tracking
+    let quizData = [];
 
     let testResults = {
-        politics: {
-            completed: false,
-            score: null,
-            label: '',
-            description: '',
-            lastUpdated: null
-        },
-        iq: {
-            completed: false,
-            score: null,
-            timeTaken: null,
-            lastUpdated: null
-        }
+        politics: { completed: false, score: null, label: '', description: '', x: 50, y: 50, lastUpdated: null },
+        iq: { completed: false, score: null, timeTaken: null, lastUpdated: null }
     };
 
     // Load saved results
     try {
-        const savedResults = localStorage.getItem('iQorumTestResults');
-        if (savedResults) {
-            testResults = JSON.parse(savedResults);
-            console.log('Loaded saved results:', testResults);
-        }
-    } catch (e) {
-        console.error('Error loading saved results:', e);
-    }
+        const saved = localStorage.getItem('iQorumTestResults');
+        if (saved) testResults = JSON.parse(saved);
+    } catch(e) { console.error(e); }
 
-    // Load quiz data from JSON
+    // Load quiz data
     fetch('quiz_data.json')
-        .then(response => response.json())
+        .then(r => r.json())
         .then(data => {
-            console.log('Quiz data loaded:', data);
             quizData = data;
-            initializeQuizzes();
+            console.log('✅ Quiz data loaded –', data.length, 'questions');
+            initializeEverything();
         })
-        .catch(error => {
-            console.error('Error loading quiz data:', error);
-            initializeQuizzes(); // Fallback
-        });
+        .catch(err => console.error('JSON load error:', err));
 
-    function initializeQuizzes() {
+    function initializeEverything() {
         generatePoliticsQuestions();
         generateIQQuestions();
-        initializeApp();
-        updateHomeTabButtons();
-        updateProfilePage();
+        setupTabs();
+        setupHomeButtons();
+        setupPoliticsLogic();
+        setupRestartButtons();
+        loadSavedResultsIntoUI();
     }
 
     function generatePoliticsQuestions() {
         const container = document.getElementById('politics-questions-container');
-        if (!container) {
-            console.error('Politics container not found!');
-            return;
-        }
+        container.innerHTML = '';
+        const politicsQ = quizData.filter(q => q.type === 'politics');
 
-        const politicsQuestions = quizData.filter(q => q.type === 'politics');
-        console.log('Found politics questions:', politicsQuestions.length);
+        politicsQ.forEach((q, i) => {
+            const div = document.createElement('div');
+            div.className = `question ${i === 0 ? 'active' : ''}`;
+            div.id = `politics-question-${i+1}`;
 
-        politicsQuestions.forEach((question, index) => {
-            const questionElement = document.createElement('div');
-            questionElement.className = `question ${index === 0 ? 'active' : ''}`;
-            questionElement.id = `politics-question-${index + 1}`; // Use index, not question.id
+            let optionsHTML = '';
+            q.options.forEach(opt => {
+                optionsHTML += `<div class="option" data-value="\( {opt.value}"> \){opt.text}</div>`;
+            });
 
-            questionElement.innerHTML = `
-                <div class="question-text">${question.id}. ${question.text}</div>
-                <div class="options">
-                    ${question.options.map(option => `
-                        <div class="option" data-value="\( {option.value}"> \){option.text}</div>
-                    `).join('')}
-                </div>
+            div.innerHTML = `
+                <div class="question-text">${q.id}. ${q.text}</div>
+                <div class="options">${optionsHTML}</div>
             `;
-
-            container.appendChild(questionElement);
+            container.appendChild(div);
         });
     }
 
     function generateIQQuestions() {
-        const container = document.getElementById('iq-questions-container');
-        if (!container) return;
-
-        const iqQuestions = quizData.filter(q => q.type === 'iq');
-        iqQuestions.forEach((question, index) => {
-            const questionElement = document.createElement('div');
-            questionElement.className = `question ${index === 0 ? 'active' : ''}`;
-            questionElement.id = `iq-question-${index + 1}`;
-
-            questionElement.innerHTML = `
-                <div class="question-text">${question.id}. ${question.text}</div>
-                <div class="options">
-                    ${question.options.map((option, optIndex) => {
-                        const isCorrect = option === question.correctAnswer;
-                        return `<div class="option" data-value="\( {isCorrect ? 'correct' : 'incorrect'}"> \){option}</div>`;
-                    }).join('')}
-                </div>
-            `;
-
-            container.appendChild(questionElement);
-        });
+        // Basic placeholder – we can expand later
+        console.log('IQ questions ready (stub)');
     }
 
-    function updateHomeTabButtons() {
-        const homeSection = document.getElementById('home');
-        if (!homeSection) return;
-
-        const politicsBtn = homeSection.querySelector('[data-test="politics"]');
-        if (politicsBtn) {
-            if (testResults.politics.completed) {
-                politicsBtn.textContent = `View Results: ${testResults.politics.label}`;
-                politicsBtn.classList.remove('btn-accent');
-                politicsBtn.classList.add('btn-secondary');
-            } else {
-                politicsBtn.textContent = 'Start Politics Test';
-                politicsBtn.classList.remove('btn-secondary');
-                politicsBtn.classList.add('btn-accent');
-            }
-        }
-
-        // Similar logic can be added for IQ button later
-    }
-
-    function updateProfilePage() {
-        const politicsStat = document.getElementById('profile-politics');
-        if (politicsStat) {
-            politicsStat.textContent = testResults.politics.completed ? testResults.politics.label : '--';
-        }
-
-        const iqStat = document.getElementById('profile-iq');
-        if (iqStat) {
-            iqStat.textContent = testResults.iq.completed ? testResults.iq.score : '--';
-        }
-
-        const testsTakenStat = document.getElementById('profile-tests-taken');
-        if (testsTakenStat) {
-            let count = (testResults.politics.completed ? 1 : 0) + (testResults.iq.completed ? 1 : 0);
-            testsTakenStat.textContent = count;
-        }
-
-        updateTestHistory();
-    }
-
-    function updateTestHistory() {
-        const testHistory = document.querySelector('.test-history');
-        if (!testHistory) return;
-
-        testHistory.innerHTML = '';
-
-        if (testResults.politics.completed) {
-            const item = document.createElement('li');
-            item.innerHTML = `
-                <div class="test-info">
-                    <div class="test-name">Political Compass Test</div>
-                    <div class="test-date">Completed on: ${new Date(testResults.politics.lastUpdated).toLocaleDateString()}</div>
-                </div>
-                <div class="test-result">${testResults.politics.label}</div>
-            `;
-            testHistory.appendChild(item);
-        }
-
-        if (testResults.iq.completed) {
-            const item = document.createElement('li');
-            item.innerHTML = `
-                <div class="test-info">
-                    <div class="test-name">IQ Assessment</div>
-                    <div class="test-date">Completed on: ${new Date(testResults.iq.lastUpdated).toLocaleDateString()}</div>
-                </div>
-                <div class="test-result">${testResults.iq.score || 'N/A'}</div>
-            `;
-            testHistory.appendChild(item);
-        }
-
-        if (!testResults.politics.completed && !testResults.iq.completed) {
-            const item = document.createElement('li');
-            item.innerHTML = `
-                <div class="test-info">
-                    <div class="test-name">No tests completed yet</div>
-                    <div class="test-date">Take a test to see your results here</div>
-                </div>
-                <div class="test-result">--</div>
-            `;
-            testHistory.appendChild(item);
-        }
-    }
-
-    function initializeApp() {
-        // Tab navigation
-        const tabs = document.querySelectorAll('.tab');
-        const sections = document.querySelectorAll('.section');
-
-        tabs.forEach(tab => {
+    function setupTabs() {
+        document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+
                 tab.classList.add('active');
-
-                sections.forEach(s => s.classList.remove('active'));
                 document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
+
+                if (tab.getAttribute('data-tab') === 'politics') {
+                    loadSavedResultsIntoUI();
+                }
             });
         });
+    }
 
-        // Politics test logic
-        let politicsAnswers = {};
-        let currentPoliticsQuestion = 1;
-
-        document.getElementById('politics-questions-container').addEventListener('click', function(e) {
-            if (e.target.classList.contains('option')) {
-                const option = e.target;
-                const questionElement = option.closest('.question');
-
-                questionElement.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
-                option.classList.add('selected');
-
-                const questionId = questionElement.id;
-                politicsAnswers[questionId] = option.getAttribute('data-value');
-
-                console.log('Current politics answers:', politicsAnswers);
-
-                // Update progress
-                const progress = (currentPoliticsQuestion / 10) * 100;
-                document.getElementById('politics-progress').style.width = `${progress}%`;
-
-                setTimeout(() => {
-                    questionElement.classList.remove('active');
-
-                    if (currentPoliticsQuestion < 10) {
-                        currentPoliticsQuestion++;
-                        document.getElementById(`politics-question-${currentPoliticsQuestion}`).classList.add('active');
-                    } else {
-                        // Show result
-                        document.getElementById('politics-result').classList.add('active');
-                        const result = calculatePoliticalResult(politicsAnswers);
-
-                        document.getElementById('politics-score').textContent = result.label;
-                        document.getElementById('politics-description').textContent = result.description;
-
-                        const point = document.getElementById('user-point');
-                        if (point) {
-                            point.style.left = `${result.x}%`;
-                            point.style.top = `${result.y}%`;
-                        }
-
-                        // Save result
-                        testResults.politics = {
-                            completed: true,
-                            score: `\( {result.x}, \){result.y}`,
-                            label: result.label,
-                            description: result.description,
-                            lastUpdated: new Date().toISOString()
-                        };
-
-                        localStorage.setItem('iQorumTestResults', JSON.stringify(testResults));
-
-                        updateHomeTabButtons();
-                        updateProfilePage();
-                    }
-                }, 800);
-            }
-        });
-
-        // Restart button
-        document.getElementById('politics-restart')?.addEventListener('click', () => {
-            politicsAnswers = {};
-            currentPoliticsQuestion = 1;
-            document.getElementById('politics-result').classList.remove('active');
-            document.getElementById('politics-progress').style.width = '0%';
-
-            document.querySelectorAll('#politics-questions-container .question').forEach(q => {
-                q.classList.remove('active');
-                q.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+    function setupHomeButtons() {
+        // Politics button on Home
+        const politicsHomeBtn = document.querySelector('[data-test="politics"]');
+        if (politicsHomeBtn) {
+            politicsHomeBtn.addEventListener('click', () => {
+                document.querySelector('[data-tab="politics"]').click();
             });
+        }
 
-            document.getElementById('politics-question-1').classList.add('active');
+        // IQ button on Home
+        const iqHomeBtn = document.getElementById('iq-start-btn');
+        if (iqHomeBtn) {
+            iqHomeBtn.addEventListener('click', () => {
+                document.querySelector('[data-tab="iq"]').click();
+            });
+        }
+    }
+
+    function setupPoliticsLogic() {
+        let answers = {};
+        let current = 1;
+
+        document.getElementById('politics-questions-container').addEventListener('click', e => {
+            if (!e.target.classList.contains('option')) return;
+
+            const option = e.target;
+            const questionDiv = option.closest('.question');
+
+            questionDiv.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+            option.classList.add('selected');
+
+            answers[questionDiv.id] = option.getAttribute('data-value');
+
+            // Progress
+            const progress = (current / 10) * 100;
+            document.getElementById('politics-progress').style.width = `${progress}%`;
+
+            setTimeout(() => {
+                questionDiv.classList.remove('active');
+
+                if (current < 10) {
+                    current++;
+                    document.getElementById(`politics-question-${current}`).classList.add('active');
+                } else {
+                    // Finish test
+                    const result = calculatePoliticalResult(answers);
+                    showPoliticsResult(result);
+                }
+            }, 600);
         });
     }
 
     function calculatePoliticalResult(answers) {
-        let econScore = 0;   // left = negative, right = positive
-        let authScore = 0;   // auth = positive, lib = negative
+        let econ = 0, auth = 0;
 
-        Object.values(answers).forEach(value => {
-            switch (value) {
-                case 'left':   econScore -= 1; break;
-                case 'right':  econScore += 1; break;
-                case 'auth':   authScore += 1; break;
-                case 'lib':    authScore -= 1; break;
-            }
+        Object.values(answers).forEach(v => {
+            if (v === 'left')  econ -= 1;
+            if (v === 'right') econ += 1;
+            if (v === 'auth')  auth += 1;
+            if (v === 'lib')   auth -= 1;
         });
 
-        // Scale to 0–100 range (centered at 50)
-        const x = 50 + (econScore * 12.5);   // rough scaling — adjust later
-        const y = 50 + (authScore * 12.5);
+        const x = Math.max(5, Math.min(95, 50 + econ * 11));
+        const y = Math.max(5, Math.min(95, 50 + auth * 11));
 
         let label = 'Centrist';
         if (x < 35 && y < 35) label = 'Libertarian Left';
         else if (x < 35 && y > 65) label = 'Authoritarian Left';
         else if (x > 65 && y < 35) label = 'Libertarian Right';
         else if (x > 65 && y > 65) label = 'Authoritarian Right';
-        else if (x < 35) label = 'Left-Leaning';
-        else if (x > 65) label = 'Right-Leaning';
-        else if (y < 35) label = 'Libertarian';
-        else if (y > 65) label = 'Authoritarian';
+        else if (x < 40) label = 'Left-Leaning';
+        else if (x > 60) label = 'Right-Leaning';
+        else if (y < 40) label = 'Libertarian';
+        else if (y > 60) label = 'Authoritarian';
 
-        return {
-            x: Math.max(0, Math.min(100, x)),
-            y: Math.max(0, Math.min(100, y)),
-            label,
-            description: 'Based on your answers, you lean toward this position.'
-        };
+        return { x, y, label, description: `Economic: ${Math.round(x-50)} • Social: ${Math.round(y-50)}` };
     }
+
+    function showPoliticsResult(result) {
+        document.getElementById('politics-result').classList.add('active');
+        document.getElementById('politics-questions-container').style.display = 'none';
+
+        document.getElementById('politics-score').textContent = result.label;
+        document.getElementById('politics-description').textContent = result.description;
+
+        const dot = document.getElementById('user-point');
+        dot.style.left = `${result.x}%`;
+        dot.style.top  = `${result.y}%`;
+
+        // Save
+        testResults.politics = {
+            completed: true,
+            label: result.label,
+            description: result.description,
+            x: result.x,
+            y: result.y,
+            lastUpdated: new Date().toISOString()
+        };
+        localStorage.setItem('iQorumTestResults', JSON.stringify(testResults));
+
+        updateProfileAndHome();
+    }
+
+    function loadSavedResultsIntoUI() {
+        if (!testResults.politics.completed) return;
+
+        const resultDiv = document.getElementById('politics-result');
+        resultDiv.classList.add('active');
+        document.getElementById('politics-questions-container').style.display = 'none';
+
+        document.getElementById('politics-score').textContent = testResults.politics.label;
+        document.getElementById('politics-description').textContent = testResults.politics.description;
+
+        const dot = document.getElementById('user-point');
+        dot.style.left = `${testResults.politics.x}%`;
+        dot.style.top  = `${testResults.politics.y}%`;
+    }
+
+    function updateProfileAndHome() {
+        // Update profile
+        const polStat = document.getElementById('profile-politics');
+        if (polStat) polStat.textContent = testResults.politics.label || '--';
+
+        const testsStat = document.getElementById('profile-tests-taken');
+        if (testsStat) testsStat.textContent = (testResults.politics.completed ? 1 : 0) + (testResults.iq.completed ? 1 : 0);
+
+        // Update Home button
+        const homeBtn = document.querySelector('[data-test="politics"]');
+        if (homeBtn && testResults.politics.completed) {
+            homeBtn.textContent = `View Results: ${testResults.politics.label}`;
+        }
+    }
+
+    function setupRestartButtons() {
+        document.getElementById('politics-restart')?.addEventListener('click', () => {
+            document.getElementById('politics-result').classList.remove('active');
+            document.getElementById('politics-questions-container').style.display = 'block';
+            document.getElementById('politics-progress').style.width = '0%';
+            document.querySelectorAll('#politics-questions-container .question').forEach((q, i) => {
+                q.classList.toggle('active', i === 0);
+                q.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+            });
+        });
+    }
+
+    console.log('🚀 iQorum JS fully initialized');
 });
