@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
     let quizData = [];
-
     let testResults = {
         politics: { completed: false, score: null, label: '', description: '', x: 50, y: 50, lastUpdated: null },
         iq: { completed: false, score: null, timeTaken: null, lastUpdated: null }
@@ -10,17 +9,16 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         const saved = localStorage.getItem('iQorumTestResults');
         if (saved) testResults = JSON.parse(saved);
-    } catch(e) { console.error(e); }
+    } catch(e) {}
 
     // Load quiz data
     fetch('quiz_data.json')
         .then(r => r.json())
         .then(data => {
             quizData = data;
-            console.log('✅ Quiz data loaded –', data.length, 'questions');
             initializeEverything();
         })
-        .catch(err => console.error('JSON load error:', err));
+        .catch(err => console.error(err));
 
     function initializeEverything() {
         generatePoliticsQuestions();
@@ -29,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setupHomeButtons();
         setupPoliticsLogic();
         setupRestartButtons();
+        setupIQStartButton();
         loadSavedResultsIntoUI();
     }
 
@@ -42,10 +41,9 @@ document.addEventListener('DOMContentLoaded', function() {
             div.className = `question ${i === 0 ? 'active' : ''}`;
             div.id = `politics-question-${i+1}`;
 
-            let optionsHTML = '';
-            q.options.forEach(opt => {
-                optionsHTML += `<div class="option" data-value="\( {opt.value}"> \){opt.text}</div>`;
-            });
+            let optionsHTML = q.options.map(opt => `
+                <div class="option" data-value="\( {opt.value}"> \){opt.text}</div>
+            `).join('');
 
             div.innerHTML = `
                 <div class="question-text">${q.id}. ${q.text}</div>
@@ -56,8 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function generateIQQuestions() {
-        // Basic placeholder – we can expand later
-        console.log('IQ questions ready (stub)');
+        console.log('IQ questions ready');
     }
 
     function setupTabs() {
@@ -67,7 +64,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
 
                 tab.classList.add('active');
-                document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
+                const section = document.getElementById(tab.getAttribute('data-tab'));
+                section.classList.add('active');
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
 
                 if (tab.getAttribute('data-tab') === 'politics') {
                     loadSavedResultsIntoUI();
@@ -77,21 +77,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function setupHomeButtons() {
-        // Politics button on Home
-        const politicsHomeBtn = document.querySelector('[data-test="politics"]');
-        if (politicsHomeBtn) {
-            politicsHomeBtn.addEventListener('click', () => {
-                document.querySelector('[data-tab="politics"]').click();
-            });
-        }
-
-        // IQ button on Home
-        const iqHomeBtn = document.getElementById('iq-start-btn');
-        if (iqHomeBtn) {
-            iqHomeBtn.addEventListener('click', () => {
-                document.querySelector('[data-tab="iq"]').click();
-            });
-        }
+        document.querySelector('[data-test="politics"]').addEventListener('click', () => {
+            document.querySelector('[data-tab="politics"]').click();
+        });
     }
 
     function setupPoliticsLogic() {
@@ -109,7 +97,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             answers[questionDiv.id] = option.getAttribute('data-value');
 
-            // Progress
             const progress = (current / 10) * 100;
             document.getElementById('politics-progress').style.width = `${progress}%`;
 
@@ -120,7 +107,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     current++;
                     document.getElementById(`politics-question-${current}`).classList.add('active');
                 } else {
-                    // Finish test
                     const result = calculatePoliticalResult(answers);
                     showPoliticsResult(result);
                 }
@@ -130,12 +116,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function calculatePoliticalResult(answers) {
         let econ = 0, auth = 0;
-
         Object.values(answers).forEach(v => {
-            if (v === 'left')  econ -= 1;
+            if (v === 'left') econ -= 1;
             if (v === 'right') econ += 1;
-            if (v === 'auth')  auth += 1;
-            if (v === 'lib')   auth -= 1;
+            if (v === 'auth') auth += 1;
+            if (v === 'lib') auth -= 1;
         });
 
         const x = Math.max(5, Math.min(95, 50 + econ * 11));
@@ -155,25 +140,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showPoliticsResult(result) {
-        document.getElementById('politics-result').classList.add('active');
         document.getElementById('politics-questions-container').style.display = 'none';
+        document.getElementById('politics-result').classList.add('active');
 
         document.getElementById('politics-score').textContent = result.label;
         document.getElementById('politics-description').textContent = result.description;
 
         const dot = document.getElementById('user-point');
         dot.style.left = `${result.x}%`;
-        dot.style.top  = `${result.y}%`;
+        dot.style.top = `${result.y}%`;
 
-        // Save
-        testResults.politics = {
-            completed: true,
-            label: result.label,
-            description: result.description,
-            x: result.x,
-            y: result.y,
-            lastUpdated: new Date().toISOString()
-        };
+        testResults.politics = { completed: true, label: result.label, description: result.description, x: result.x, y: result.y, lastUpdated: new Date().toISOString() };
         localStorage.setItem('iQorumTestResults', JSON.stringify(testResults));
 
         updateProfileAndHome();
@@ -182,27 +159,24 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadSavedResultsIntoUI() {
         if (!testResults.politics.completed) return;
 
-        const resultDiv = document.getElementById('politics-result');
-        resultDiv.classList.add('active');
         document.getElementById('politics-questions-container').style.display = 'none';
+        document.getElementById('politics-result').classList.add('active');
 
         document.getElementById('politics-score').textContent = testResults.politics.label;
         document.getElementById('politics-description').textContent = testResults.politics.description;
 
         const dot = document.getElementById('user-point');
         dot.style.left = `${testResults.politics.x}%`;
-        dot.style.top  = `${testResults.politics.y}%`;
+        dot.style.top = `${testResults.politics.y}%`;
     }
 
     function updateProfileAndHome() {
-        // Update profile
         const polStat = document.getElementById('profile-politics');
         if (polStat) polStat.textContent = testResults.politics.label || '--';
 
         const testsStat = document.getElementById('profile-tests-taken');
         if (testsStat) testsStat.textContent = (testResults.politics.completed ? 1 : 0) + (testResults.iq.completed ? 1 : 0);
 
-        // Update Home button
         const homeBtn = document.querySelector('[data-test="politics"]');
         if (homeBtn && testResults.politics.completed) {
             homeBtn.textContent = `View Results: ${testResults.politics.label}`;
@@ -210,16 +184,36 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function setupRestartButtons() {
-        document.getElementById('politics-restart')?.addEventListener('click', () => {
-            document.getElementById('politics-result').classList.remove('active');
-            document.getElementById('politics-questions-container').style.display = 'block';
-            document.getElementById('politics-progress').style.width = '0%';
-            document.querySelectorAll('#politics-questions-container .question').forEach((q, i) => {
-                q.classList.toggle('active', i === 0);
-                q.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+        const restartBtn = document.getElementById('politics-restart');
+        if (restartBtn) {
+            restartBtn.addEventListener('click', () => {
+                // Reset everything
+                document.getElementById('politics-result').classList.remove('active');
+                document.getElementById('politics-questions-container').style.display = 'block';
+                document.getElementById('politics-progress').style.width = '0%';
+
+                // Reset all questions
+                document.querySelectorAll('#politics-questions-container .question').forEach((q, i) => {
+                    q.classList.toggle('active', i === 0);
+                    q.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+                });
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             });
-        });
+        }
     }
 
-    console.log('🚀 iQorum JS fully initialized');
+    function setupIQStartButton() {
+        const startBtn = document.getElementById('iq-start-btn');
+        if (startBtn) {
+            startBtn.addEventListener('click', () => {
+                document.getElementById('iq-start').style.display = 'none';
+                document.getElementById('iq-test').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                // Timer and real IQ logic can be added later
+            });
+        }
+    }
+
+    console.log('🚀 iQorum fully loaded with fixes');
 });
