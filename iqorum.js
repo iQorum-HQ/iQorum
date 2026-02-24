@@ -18,11 +18,10 @@ document.addEventListener('DOMContentLoaded', function() {
             quizData = data;
             initializeEverything();
         })
-        .catch(err => console.error(err));
+        .catch(err => console.error('JSON error:', err));
 
     function initializeEverything() {
         generatePoliticsQuestions();
-        generateIQQuestions();
         setupTabs();
         setupHomeButtons();
         setupPoliticsLogic();
@@ -31,30 +30,39 @@ document.addEventListener('DOMContentLoaded', function() {
         loadSavedResultsIntoUI();
     }
 
+    // SAFER version - no template strings (fixes the ){opt.text} bug)
     function generatePoliticsQuestions() {
         const container = document.getElementById('politics-questions-container');
         container.innerHTML = '';
+
         const politicsQ = quizData.filter(q => q.type === 'politics');
 
         politicsQ.forEach((q, i) => {
-            const div = document.createElement('div');
-            div.className = `question ${i === 0 ? 'active' : ''}`;
-            div.id = `politics-question-${i+1}`;
+            const questionDiv = document.createElement('div');
+            questionDiv.className = `question ${i === 0 ? 'active' : ''}`;
+            questionDiv.id = `politics-question-${i+1}`;
 
-            let optionsHTML = q.options.map(opt => `
-                <div class="option" data-value="\( {opt.value}"> \){opt.text}</div>
-            `).join('');
+            // Question text
+            const textDiv = document.createElement('div');
+            textDiv.className = 'question-text';
+            textDiv.textContent = `${q.id}. ${q.text}`;
+            questionDiv.appendChild(textDiv);
 
-            div.innerHTML = `
-                <div class="question-text">${q.id}. ${q.text}</div>
-                <div class="options">${optionsHTML}</div>
-            `;
-            container.appendChild(div);
+            // Options container
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+
+            q.options.forEach(opt => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.textContent = opt.text;
+                optionDiv.setAttribute('data-value', opt.value);
+                optionsDiv.appendChild(optionDiv);
+            });
+
+            questionDiv.appendChild(optionsDiv);
+            container.appendChild(questionDiv);
         });
-    }
-
-    function generateIQQuestions() {
-        console.log('IQ questions ready');
     }
 
     function setupTabs() {
@@ -64,14 +72,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
 
                 tab.classList.add('active');
-                const section = document.getElementById(tab.getAttribute('data-tab'));
-                section.classList.add('active');
+                document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
 
-                if (tab.getAttribute('data-tab') === 'politics') {
-                    loadSavedResultsIntoUI();
-                }
+                if (tab.getAttribute('data-tab') === 'politics') loadSavedResultsIntoUI();
             });
         });
     }
@@ -84,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function setupPoliticsLogic() {
         let answers = {};
-        let current = 1;
+        let currentQuestion = 1;
 
         document.getElementById('politics-questions-container').addEventListener('click', e => {
             if (!e.target.classList.contains('option')) return;
@@ -97,15 +102,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
             answers[questionDiv.id] = option.getAttribute('data-value');
 
-            const progress = (current / 10) * 100;
+            const progress = (currentQuestion / 10) * 100;
             document.getElementById('politics-progress').style.width = `${progress}%`;
 
             setTimeout(() => {
                 questionDiv.classList.remove('active');
 
-                if (current < 10) {
-                    current++;
-                    document.getElementById(`politics-question-${current}`).classList.add('active');
+                if (currentQuestion < 10) {
+                    currentQuestion++;
+                    document.getElementById(`politics-question-${currentQuestion}`).classList.add('active');
                 } else {
                     const result = calculatePoliticalResult(answers);
                     showPoliticsResult(result);
@@ -150,7 +155,14 @@ document.addEventListener('DOMContentLoaded', function() {
         dot.style.left = `${result.x}%`;
         dot.style.top = `${result.y}%`;
 
-        testResults.politics = { completed: true, label: result.label, description: result.description, x: result.x, y: result.y, lastUpdated: new Date().toISOString() };
+        testResults.politics = {
+            completed: true,
+            label: result.label,
+            description: result.description,
+            x: result.x,
+            y: result.y,
+            lastUpdated: new Date().toISOString()
+        };
         localStorage.setItem('iQorumTestResults', JSON.stringify(testResults));
 
         updateProfileAndHome();
@@ -158,7 +170,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function loadSavedResultsIntoUI() {
         if (!testResults.politics.completed) return;
-
         document.getElementById('politics-questions-container').style.display = 'none';
         document.getElementById('politics-result').classList.add('active');
 
@@ -174,9 +185,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const polStat = document.getElementById('profile-politics');
         if (polStat) polStat.textContent = testResults.politics.label || '--';
 
-        const testsStat = document.getElementById('profile-tests-taken');
-        if (testsStat) testsStat.textContent = (testResults.politics.completed ? 1 : 0) + (testResults.iq.completed ? 1 : 0);
-
         const homeBtn = document.querySelector('[data-test="politics"]');
         if (homeBtn && testResults.politics.completed) {
             homeBtn.textContent = `View Results: ${testResults.politics.label}`;
@@ -184,23 +192,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function setupRestartButtons() {
-        const restartBtn = document.getElementById('politics-restart');
-        if (restartBtn) {
-            restartBtn.addEventListener('click', () => {
-                // Reset everything
-                document.getElementById('politics-result').classList.remove('active');
-                document.getElementById('politics-questions-container').style.display = 'block';
-                document.getElementById('politics-progress').style.width = '0%';
+        document.getElementById('politics-restart').addEventListener('click', () => {
+            document.getElementById('politics-result').classList.remove('active');
+            document.getElementById('politics-questions-container').style.display = 'block';
+            document.getElementById('politics-progress').style.width = '0%';
 
-                // Reset all questions
-                document.querySelectorAll('#politics-questions-container .question').forEach((q, i) => {
-                    q.classList.toggle('active', i === 0);
-                    q.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
-                });
-
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.querySelectorAll('#politics-questions-container .question').forEach((q, i) => {
+                q.classList.toggle('active', i === 0);
+                q.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
             });
-        }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
     }
 
     function setupIQStartButton() {
@@ -210,10 +213,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('iq-start').style.display = 'none';
                 document.getElementById('iq-test').style.display = 'block';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-                // Timer and real IQ logic can be added later
             });
         }
     }
 
-    console.log('🚀 iQorum fully loaded with fixes');
+    console.log('🚀 iQorum JS v4 - safe DOM version loaded');
 });
